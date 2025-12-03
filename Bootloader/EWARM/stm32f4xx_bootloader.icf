@@ -1,0 +1,79 @@
+/*###ICF### Section handled by ICF editor, don't touch! ****/
+/*-Editor annotation file-*/
+/* IcfEditorFile="$TOOLKIT_DIR$\config\ide\IcfEditor\cortex_v1_0.xml" */
+
+/*******************************************************************************
+ * @file    stm32f4xx_bootloader.icf
+ * @brief   IAR Linker Configuration for Functional Safety Bootloader
+ * @target  STM32F407VGT6
+ * @author  Safety Team
+ * @version V1.0.0
+ *
+ * Memory Layout:
+ *   Bootloader:  0x08000000 - 0x0800BFFF (48KB, Sectors 0-2)
+ *   Config/Cal:  0x0800C000 - 0x0800FFFF (16KB, Sector 3)
+ *   Application: 0x08010000 - 0x0807FFFF (448KB, Sectors 4-7)
+ *
+ * Compliance: IEC 61508 SIL 2 / ISO 13849 PL d
+ ******************************************************************************/
+
+/*-Specials-*/
+define symbol __ICFEDIT_intvec_start__ = 0x08000000;
+
+/*-Memory Regions-*/
+define symbol __ICFEDIT_region_ROM_start__    = 0x08000000;
+define symbol __ICFEDIT_region_ROM_end__      = 0x0800BFFB;  /* Reserve 4 bytes for CRC */
+define symbol __ICFEDIT_region_RAM_start__    = 0x20000000;
+define symbol __ICFEDIT_region_RAM_end__      = 0x2001FFFF;
+define symbol __ICFEDIT_region_CCMRAM_start__ = 0x10000000;
+define symbol __ICFEDIT_region_CCMRAM_end__   = 0x1000FFFF;
+
+/*-Sizes-*/
+define symbol __ICFEDIT_size_cstack__ = 0x800;   /* 2KB Stack */
+define symbol __ICFEDIT_size_heap__   = 0x400;   /* 1KB Heap (minimal for bootloader) */
+
+/**** End of ICF editor section. ###ICF###*/
+
+/*-CRC Location-*/
+define symbol __CRC_start__ = 0x0800BFFC;
+define symbol __CRC_end__   = 0x0800BFFF;
+
+/*-Config/Calibration Area (Read-only for Bootloader)-*/
+define symbol __CONFIG_start__ = 0x0800C000;
+define symbol __CONFIG_end__   = 0x0800FFFF;
+
+/*-Application Area-*/
+define symbol __APP_start__ = 0x08010000;
+define symbol __APP_end__   = 0x0807FFFF;
+
+define memory mem with size = 4G;
+
+define region ROM_region      = mem:[from __ICFEDIT_region_ROM_start__ to __ICFEDIT_region_ROM_end__];
+define region CRC_region      = mem:[from __CRC_start__ to __CRC_end__];
+define region CONFIG_region   = mem:[from __CONFIG_start__ to __CONFIG_end__];
+define region RAM_region      = mem:[from __ICFEDIT_region_RAM_start__ to __ICFEDIT_region_RAM_end__];
+define region CCMRAM_region   = mem:[from __ICFEDIT_region_CCMRAM_start__ to __ICFEDIT_region_CCMRAM_end__];
+
+define block CSTACK with alignment = 8, size = __ICFEDIT_size_cstack__ { };
+define block HEAP   with alignment = 8, size = __ICFEDIT_size_heap__   { };
+
+initialize by copy { readwrite };
+do not initialize  { section .noinit };
+
+place at address mem:__ICFEDIT_intvec_start__ { readonly section .intvec };
+
+place in ROM_region   { readonly };
+place in CRC_region   { section .boot_crc };
+place in RAM_region   { readwrite, block HEAP };
+
+/* Place stack in CCM RAM for safety (protected from DMA corruption) */
+place in CCMRAM_region { block CSTACK };
+
+/* Export symbols for use in code */
+define exported symbol __boot_start__   = __ICFEDIT_region_ROM_start__;
+define exported symbol __boot_end__     = __ICFEDIT_region_ROM_end__;
+define exported symbol __boot_crc__     = __CRC_start__;
+define exported symbol __config_start__ = __CONFIG_start__;
+define exported symbol __config_end__   = __CONFIG_end__;
+define exported symbol __app_start__    = __APP_start__;
+define exported symbol __app_end__      = __APP_end__;

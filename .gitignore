@@ -1,0 +1,69 @@
+# IAR EWARM
+EWARM/settings/
+EWARM/Debug/
+EWARM/Release/
+EWARM/*.dep
+EWARM/*.ewt
+EWARM/*.dbgdt
+EWARM/*.dni
+EWARM/*.wsdt
+EWARM/*.wspos
+**/BrowseInfo/
+**/.cache/
+*.o
+*.d
+*.out
+*.map
+*.sim
+*.pbd
+*.pbi
+*.browse
+*.xcl
+*.idx
+*.ewd
+Backup*of*
+
+# Bootloader IAR
+Bootloader/EWARM/settings/
+Bootloader/EWARM/Debug/
+Bootloader/EWARM/Release/
+Bootloader/EWARM/*.dep
+Bootloader/EWARM/*.ewt
+Bootloader/EWARM/*.dbgdt
+Bootloader/EWARM/*.dni
+
+# Build outputs
+*.hex
+*.bin
+*.elf
+*.srec
+*.lst
+*.a
+*.lib
+
+# STM32CubeMX
+.mxproject
+*.ioc.bak
+
+# Conversation logs
+conversation-*.txt
+
+# Backup files
+*~
+*.bak
+*.orig
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Log files
+*.log
