@@ -60,11 +60,11 @@ typedef enum {
 
 /* Commands are written to a specific RAM location by debugger */
 #define FACTORY_CMD_NONE          0x00000000UL
-#define FACTORY_CMD_READ_CAL      0xCAL1READ
-#define FACTORY_CMD_WRITE_CAL     0xCAL1WRIT
-#define FACTORY_CMD_VERIFY        0xCAL1VRFY
-#define FACTORY_CMD_EXIT          0xCAL1EXIT
-#define FACTORY_CMD_ABORT         0xCAL1ABRT
+#define FACTORY_CMD_READ_CAL      0xCA110001UL  /* Read calibration */
+#define FACTORY_CMD_WRITE_CAL     0xCA110002UL  /* Write calibration */
+#define FACTORY_CMD_VERIFY        0xCA110003UL  /* Verify calibration */
+#define FACTORY_CMD_EXIT          0xCA110004UL  /* Exit factory mode */
+#define FACTORY_CMD_ABORT         0xCA11FFFFUL  /* Abort factory mode */
 
 /* Command/Response RAM locations (CCM RAM) */
 #define FACTORY_CMD_ADDR          0x10000000UL

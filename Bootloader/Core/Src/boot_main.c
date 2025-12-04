@@ -391,7 +391,7 @@ static void Boot_SystemInit(void)
     /* Enable required peripheral clocks */
     __HAL_RCC_CRC_CLK_ENABLE();
     __HAL_RCC_PWR_CLK_ENABLE();
-    __HAL_RCC_FLASH_CLK_ENABLE();
+    /* Note: Flash doesn't need clock enable on STM32F4 */
 }
 
 /**

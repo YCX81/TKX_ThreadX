@@ -118,13 +118,13 @@
    define is negated, thereby forcing the stack fill which is necessary for the stack checking
    logic.  */
 
-/*#define TX_ENABLE_STACK_CHECKING*/
+#define TX_ENABLE_STACK_CHECKING
 
 /* Determine if preemption-threshold should be disabled. By default, preemption-threshold is
    enabled. If the application does not use preemption-threshold, it may be disabled to reduce
    code size and improve performance.  */
 
-#define TX_DISABLE_PREEMPTION_THRESHOLD
+/*#define TX_DISABLE_PREEMPTION_THRESHOLD*/
 
 /* Determine if global ThreadX variables should be cleared. If the compiler startup code clears
    the .bss section prior to ThreadX running, the define can be used to eliminate unnecessary
@@ -149,7 +149,7 @@
    enabled. If the application does not use notify callbacks, they may be disabled to reduce
    code size and improve performance.  */
 
-#define TX_DISABLE_NOTIFY_CALLBACKS
+/*#define TX_DISABLE_NOTIFY_CALLBACKS*/
 
 /* Determine if the tx_thread_resume and tx_thread_suspend services should have their internal
    code in-line. This results in a larger image, but improves the performance of the thread
@@ -166,7 +166,7 @@
    code size and overhead, but provides the ability to generate system trace information which
    is available for viewing in TraceX.  */
 
-/*#define TX_ENABLE_EVENT_TRACE*/
+#define TX_ENABLE_EVENT_TRACE
 
 /* Determine if block pool performance gathering is required by the application. When the following is
    defined, ThreadX gathers various block pool performance information. */
@@ -208,6 +208,14 @@
 
 /*#define TX_TIMER_ENABLE_PERFORMANCE_INFO*/
 
+/* Define the clock source for trace event entry time stamp. */
+
+/*#define TX_TRACE_TIME_SOURCE  *((ULONG *) 0xE0001004)*/
+
+/* Define the clock source for trace mask. */
+
+/*#define TX_TRACE_TIME_MASK  0xFFFFFFFFUL*/
+
 /* Define if the execution change notify is enabled. */
 
 /*#define TX_ENABLE_EXECUTION_CHANGE_NOTIFY*/
@@ -237,15 +245,14 @@
 
 /*#define TX_MEMSET  memset((a),(b),(c))*/
 
-/* Define if the IAR library is supported.
- * Note: Use __ICCARM__ for IAR C compiler, not __IAR_SYSTEMS_ASM__ (assembler) */
-#ifdef __ICCARM__
+#ifdef __IAR_SYSTEMS_ASM__
+/* Define if the IAR library is supported. */
 #define TX_ENABLE_IAR_LIBRARY_SUPPORT
 #endif
 
 /* Define if the safety critical configuration is enabled. */
 
-#define TX_SAFETY_CRITICAL
+/*#define TX_SAFETY_CRITICAL*/
 
 #endif
 

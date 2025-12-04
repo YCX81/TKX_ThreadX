@@ -317,8 +317,8 @@ storage_status_t Storage_CheckSafetyParamsExist(void)
  */
 storage_status_t Storage_EraseSector(void)
 {
-    FLASH_EraseInitTypeDef erase_init;
-    uint32_t sector_error;
+    FLASH_EraseInitTypeDef erase_init = {0};
+    uint32_t sector_error = 0;
     HAL_StatusTypeDef hal_status;
 
     /* Unlock Flash */

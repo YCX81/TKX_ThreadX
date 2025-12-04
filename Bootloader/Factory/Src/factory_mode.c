@@ -22,6 +22,7 @@
 #include "storage_flash.h"
 #include "boot_selftest.h"
 #include "stm32f4xx_hal.h"
+#include <string.h>
 
 /* Private variables ---------------------------------------------------------*/
 static factory_state_t factory_state = FACTORY_STATE_INIT;

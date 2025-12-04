@@ -242,6 +242,9 @@
           <state>FX_INCLUDE_USER_DEFINE_FILE</state>
           <state></state>
           <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1170,19 +1173,16 @@
           <name>$PROJ_DIR$/../Core/Src/app_threadx.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\Core\Src\dma.c</name>
+          <name>$PROJ_DIR$/../Core/Src/crc.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$/../Core/Src/iwdg.c</name>
+          <name>$PROJ_DIR$\..\Core\Src\dma.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\Core\Src\sdio.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\Core\Src\spi.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$/../Core/Src/wwdg.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\Core\Src\stm32f4xx_it.c</name>
@@ -1237,7 +1237,7 @@
         <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim_ex.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$/../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc.c</name>
@@ -1289,9 +1289,6 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_spi.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c</name>
       </file>
     </group>
   </group>

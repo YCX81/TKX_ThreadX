@@ -93,6 +93,12 @@ void SystemCoreClockUpdate(void)
             pllsource = (RCC->PLLCFGR & RCC_PLLCFGR_PLLSRC) >> 22;
             pllm = RCC->PLLCFGR & RCC_PLLCFGR_PLLM;
 
+            /* Safety check: prevent divide by zero */
+            if (pllm == 0U)
+            {
+                pllm = 2U;  /* Use safe default (matches reset value) */
+            }
+
             if (pllsource != 0)
             {
                 /* HSE used as PLL clock source */

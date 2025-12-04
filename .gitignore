@@ -1,5 +1,7 @@
 # IAR EWARM
 EWARM/settings/
+**/C-STAT/
+*.db
 EWARM/Debug/
 EWARM/Release/
 EWARM/*.dep
@@ -21,6 +23,7 @@ EWARM/*.wspos
 *.xcl
 *.idx
 *.ewd
+*.rsp
 Backup*of*
 
 # Bootloader IAR

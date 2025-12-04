@@ -138,15 +138,23 @@ test_result_t Boot_RAM_Test(void)
     volatile uint32_t *test_addr;
     uint32_t backup[RAM_TEST_SIZE / 4];
     uint32_t i;
-    uint32_t num_words = RAM_TEST_SIZE / 4;
+    const uint32_t num_words = RAM_TEST_SIZE / 4;
+    uint32_t backup_valid = 0U;  /* Flag to track backup completion */
+
+    /* Safety check: ensure test area is valid */
+    if (num_words == 0U)
+    {
+        return TEST_FAIL;
+    }
 
     test_addr = (volatile uint32_t *)RAM_TEST_START;
 
-    /* Backup original data */
+    /* Backup original data (initialize backup array) */
     for (i = 0; i < num_words; i++)
     {
         backup[i] = test_addr[i];
     }
+    backup_valid = 1U;  /* Mark backup as complete */
 
     /* Step 1: Write 0 (ascending) */
     for (i = 0; i < num_words; i++)
@@ -212,10 +220,13 @@ test_result_t Boot_RAM_Test(void)
     return TEST_PASS;
 
 test_fail:
-    /* Attempt to restore data before returning */
-    for (i = 0; i < num_words; i++)
+    /* Attempt to restore data before returning (only if backup was completed) */
+    if (backup_valid != 0U)
     {
-        test_addr[i] = backup[i];
+        for (i = 0; i < num_words; i++)
+        {
+            test_addr[i] = backup[i];
+        }
     }
     return TEST_FAIL;
 }
@@ -260,9 +271,9 @@ test_result_t Boot_Clock_Test(void)
     /* Get current system clock */
     sysclk = HAL_RCC_GetSysClockFreq();
 
-    /* Calculate acceptable range */
-    expected_min = EXPECTED_SYSCLK_HZ * (100 - CLOCK_TOLERANCE_PERCENT) / 100;
-    expected_max = EXPECTED_SYSCLK_HZ * (100 + CLOCK_TOLERANCE_PERCENT) / 100;
+    /* Calculate acceptable range (avoid overflow by dividing first) */
+    expected_min = (EXPECTED_SYSCLK_HZ / 100U) * (100U - CLOCK_TOLERANCE_PERCENT);
+    expected_max = (EXPECTED_SYSCLK_HZ / 100U) * (100U + CLOCK_TOLERANCE_PERCENT);
 
     /* Verify clock is within tolerance */
     if (sysclk < expected_min || sysclk > expected_max)

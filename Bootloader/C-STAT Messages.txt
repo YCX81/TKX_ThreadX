@@ -1,0 +1,157 @@
+c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal.c
+  Global variable `uwTickFreq' is not checked against 0 before it is used as a divisor	ATH-div-0-unchk-global	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal.c:256
+    HAL_InitTick	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal.c
+      if (HAL_SYSTICK_Config(SystemCoreClock/(1000U/uwTickFreq))>0) is false	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal.c:256
+      non_float_cast_divide	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal.c:256
+      if (TickPriority<(1UL<<__NVIC_PRIO_BITS)) is true	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal.c:262
+      return	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal.c:273
+  RHS argument is in interval 24 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal.c:444
+  RHS argument is in interval 16 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal.c:444
+  RHS argument is in interval 8 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal.c:444
+c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_gpio.c
+  RHS argument is in interval [0,15] which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_gpio.c:180
+  RHS argument is in interval [0,28] which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_gpio.c:225
+  RHS argument is in interval [0,12] which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_gpio.c:244
+  RHS argument is in interval [0,15] which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_gpio.c:308
+  RHS argument is in interval [0,12] which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_gpio.c:316
+  RHS argument is in interval [0,12] which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_gpio.c:328
+  RHS argument is in interval [0,28] which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_gpio.c:337
+c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c
+  Variable `backup' may be uninitialized	SPC-uninit-var-some	High	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c:224
+    Boot_RAM_Test	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c
+      if (num_words==0) is false	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c:144
+      for (i = 0;i<num_words;i++) is false	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c:152
+      for (i = 0;i<num_words;i++) is false	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c:158
+      for (i = 0;i<num_words;i++) is true	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c:164
+      if (test_addr[i]!=0x0) is true	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c:166
+      goto test_fail	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c:168
+      for (i = 0;i<num_words;i++) is true	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c:222
+      Read of `backup'	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c:224
+  RHS argument is in interval 17 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c:280
+  RHS argument is in interval 25 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\boot_selftest.c:287
+c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c
+  RHS argument is in interval 27 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2574
+  RHS argument is in interval 27 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2601
+  Possible division by 0. Divisor has potential range [0,63]	ATH-div-0-pos	High	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2764
+    HAL_RCCEx_GetPeriphCLKFreq	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c
+      switch (PeriphClk)	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2727
+      case 1:	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2729
+      switch (srcclk)	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2733
+      case 0:	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2743
+      if ((((PERIPH_BASE+AHB1PERIPH_BASE)+RCC_BASE)->PLLCFGR&(RCC_PLLCFGR_PLLSRC_Msk<<RCC_PLLCFGR_PLLSRC_Pos))==(RCC_PLLCFGR_PLLSRC_HSE_Msk<<RCC_PLLCFGR_PLLSRC_HSE_Pos)) is true	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2761
+      ATH-div-0-pos,MISRAC2004-1.2_h,MISRAC2012-Rule-1.3_f,CERT-INT33-C_e_ident_ref	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2764
+  Possible division by 0. Divisor has potential range [0,63]	ATH-div-0-pos	High	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2769
+    HAL_RCCEx_GetPeriphCLKFreq	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c
+      switch (PeriphClk)	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2727
+      case 1:	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2729
+      switch (srcclk)	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2733
+      case 0:	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2743
+      if ((((PERIPH_BASE+AHB1PERIPH_BASE)+RCC_BASE)->PLLCFGR&(RCC_PLLCFGR_PLLSRC_Msk<<RCC_PLLCFGR_PLLSRC_Pos))==(RCC_PLLCFGR_PLLSRC_HSE_Msk<<RCC_PLLCFGR_PLLSRC_HSE_Pos)) is false	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2761
+      ATH-div-0-pos,MISRAC2004-1.2_h,MISRAC2012-Rule-1.3_f,CERT-INT33-C_e_ident_ref	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2769
+  Possible division by 0. Divisor has potential range [0,7]	ATH-div-0-pos	High	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2775
+    HAL_RCCEx_GetPeriphCLKFreq	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c
+      switch (PeriphClk)	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2727
+      case 1:	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2729
+      switch (srcclk)	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2733
+      case 0:	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2743
+      if ((((PERIPH_BASE+AHB1PERIPH_BASE)+RCC_BASE)->PLLCFGR&(RCC_PLLCFGR_PLLSRC_Msk<<RCC_PLLCFGR_PLLSRC_Pos))==(RCC_PLLCFGR_PLLSRC_HSE_Msk<<RCC_PLLCFGR_PLLSRC_HSE_Pos)) is false	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2761
+      ATH-div-0-pos,MISRAC2004-1.2_h,MISRAC2012-Rule-1.3_f,CERT-INT33-C_e_ident_ref	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2775
+  RHS argument is in interval 27 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2868
+  RHS argument is in interval 27 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc_ex.c:2913
+c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c
+  RHS argument is in interval 17 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:240
+  RHS argument is in interval 17 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:257
+  RHS argument is in interval 17 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:271
+  RHS argument is in interval 25 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:483
+  RHS argument is in interval 25 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:504
+  RHS argument is in interval 25 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:521
+  RHS argument is in interval 17 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:651
+  RHS argument is in interval 25 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:661
+  Variable `GPIO_InitStruct' may be uninitialized	SPC-uninit-var-some	High	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:790
+    HAL_RCC_MCOConfig	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c
+      if (RCC_MCOx==RCC_MCO1) is true	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:782
+      A possible assignment to variable `GPIO_InitStruct'	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:790
+  Local variable `pllm' is not checked against 0 before it is used as a divisor	ATH-div-0-unchk-local	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:913
+    HAL_RCC_GetSysClockFreq	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c
+      switch (((PERIPH_BASE+AHB1PERIPH_BASE)+RCC_BASE)->CFGR&(RCC_CFGR_SWS_Msk<<RCC_CFGR_SWS_Pos))	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:893
+      case 8:	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:905
+      if ((((PERIPH_BASE+AHB1PERIPH_BASE)+RCC_BASE)->PLLCFGR&(RCC_PLLCFGR_PLLSRC_Msk<<RCC_PLLCFGR_PLLSRC_Pos))!=RCC_PLLCFGR_PLLSRC_HSI) is true	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:910
+      non_float_cast_divide	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:913
+      break	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:923
+      return	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:931
+  Possible division by 0. Divisor has potential range [0,63]	ATH-div-0-pos	High	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:913
+    HAL_RCC_GetSysClockFreq	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c
+      switch (((PERIPH_BASE+AHB1PERIPH_BASE)+RCC_BASE)->CFGR&(RCC_CFGR_SWS_Msk<<RCC_CFGR_SWS_Pos))	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:893
+      case 8:	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:905
+      if ((((PERIPH_BASE+AHB1PERIPH_BASE)+RCC_BASE)->PLLCFGR&(RCC_PLLCFGR_PLLSRC_Msk<<RCC_PLLCFGR_PLLSRC_Pos))!=RCC_PLLCFGR_PLLSRC_HSI) is true	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:910
+      ATH-div-0-pos,MISRAC2004-1.2_h,MISRAC2012-Rule-1.3_f,CERT-INT33-C_e_ident_ref	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:913
+  Possible division by 0. Divisor has potential range [0,63]	ATH-div-0-pos	High	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:918
+    HAL_RCC_GetSysClockFreq	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c
+      switch (((PERIPH_BASE+AHB1PERIPH_BASE)+RCC_BASE)->CFGR&(RCC_CFGR_SWS_Msk<<RCC_CFGR_SWS_Pos))	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:893
+      case 8:	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:905
+      if ((((PERIPH_BASE+AHB1PERIPH_BASE)+RCC_BASE)->PLLCFGR&(RCC_PLLCFGR_PLLSRC_Msk<<RCC_PLLCFGR_PLLSRC_Pos))!=RCC_PLLCFGR_PLLSRC_HSI) is false	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:910
+      ATH-div-0-pos,MISRAC2004-1.2_h,MISRAC2012-Rule-1.3_f,CERT-INT33-C_e_ident_ref	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_rcc.c:918
+c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c
+  Possible division by 0. Divisor has potential range [0,63]	ATH-div-0-pos	High	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c:99
+    SystemCoreClockUpdate	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c
+      switch (tmp)	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c:84
+      case 8:	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c:92
+      if (pllsource!=0) is true	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c:96
+      ATH-div-0-pos,MISRAC2004-1.2_h,MISRAC2012-Rule-1.3_f,CERT-INT33-C_e_ident_ref	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c:99
+  Possible division by 0. Divisor has potential range [0,63]	ATH-div-0-pos	High	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c:104
+    SystemCoreClockUpdate	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c
+      switch (tmp)	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c:84
+      case 8:	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c:92
+      if (pllsource!=0) is false	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c:96
+      ATH-div-0-pos,MISRAC2004-1.2_h,MISRAC2012-Rule-1.3_f,CERT-INT33-C_e_ident_ref	c:\users\ycx\desktop\tkx_threadx\bootloader\core\src\system_stm32f4xx.c:104
+c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:1326
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:1326
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:1326
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:1326
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:1326
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3275
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3275
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3275
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3275
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3275
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3279
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3279
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3279
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3279
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3279
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3282
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3282
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3282
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3282
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3282
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3584
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3584
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3584
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3584
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3584
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3587
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3587
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3587
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3587
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3587
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3606
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3606
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3606
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3606
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3606
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3664
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3664
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3664
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3664
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3664
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3667
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3667
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3667
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3667
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3667
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3670
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3670
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3670
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3670
+  RHS argument is in interval 28 which is out of range of the shift operator	ATH-shift-bounds	Medium	c:\users\ycx\desktop\tkx_threadx\drivers\stm32f4xx_hal_driver\src\stm32f4xx_hal_uart.c:3670

@@ -63,11 +63,15 @@ extern "C" {
 /* ============================================================================
  * Magic Numbers
  * ============================================================================*/
-#define BOOT_CONFIG_MAGIC       0xC0F16000UL    /* "CONFIG" */
-#define SAFETY_PARAMS_MAGIC     0xCAL1B000UL    /* "CALIB" - Note: will be hex */
-#define SAFETY_PARAMS_MAGIC_VAL 0xCA11B000UL    /* Actual hex value */
-#define NONSAFETY_PARAMS_MAGIC  0xEEPR0000UL
-#define NONSAFETY_PARAMS_MAGIC_VAL 0xEE9A0000UL /* Actual hex value */
+#define BOOT_CONFIG_MAGIC       0xC0F16000UL    /* Boot config magic */
+#define CONFIG_MAGIC            BOOT_CONFIG_MAGIC /* Alias */
+#define SAFETY_PARAMS_MAGIC_VAL 0xCA11B000UL    /* Safety params magic */
+#define SAFETY_PARAMS_MAGIC     SAFETY_PARAMS_MAGIC_VAL /* Alias */
+#define NONSAFETY_PARAMS_MAGIC_VAL 0xEE9A0000UL /* Non-safety params magic */
+#define FACTORY_MODE_MAGIC      0xFAC70000UL    /* Factory mode magic */
+
+/* Safety Parameters Version */
+#define SAFETY_PARAMS_VERSION   0x0100U         /* Version 1.0 */
 
 /* ============================================================================
  * Boot Status Codes
@@ -81,8 +85,14 @@ typedef enum {
     BOOT_ERROR_RANGE            = 0x05U,
     BOOT_ERROR_SELFTEST         = 0x06U,
     BOOT_ERROR_TIMEOUT          = 0x07U,
-    BOOT_ERROR_CLOCK            = 0x08U
+    BOOT_ERROR_CLOCK            = 0x08U,
+    BOOT_ERROR_INVALID_APP      = 0x09U
 } boot_status_t;
+
+/* Aliases for compatibility */
+#define BOOT_CRC_ERROR          BOOT_ERROR_CRC
+#define BOOT_TIMEOUT            BOOT_ERROR_TIMEOUT
+#define BOOT_INVALID_APP        BOOT_ERROR_INVALID_APP
 
 /* ============================================================================
  * Self-Test Result Codes
