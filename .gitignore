@@ -75,3 +75,4 @@ Thumbs.db
 **/.ninja_deps
 **/.ninja_log
 **/compile_commands.json
+.claude/
