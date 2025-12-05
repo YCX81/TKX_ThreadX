@@ -70,3 +70,8 @@ Thumbs.db
 
 # Log files
 *.log
+
+# Build artifacts
+**/.ninja_deps
+**/.ninja_log
+**/compile_commands.json
