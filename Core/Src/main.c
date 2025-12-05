@@ -21,13 +21,16 @@
 #include "main.h"
 #include "crc.h"
 #include "dma.h"
+#include "iwdg.h"
 #include "sdio.h"
 #include "spi.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "app_main.h"
+#include "safety_core.h"
+#include "safety_mpu.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,7 +73,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  /* Early safety initialization before HAL */
+  Safety_EarlyInit();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -86,7 +90,10 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  /* Post-clock safety initialization */
+  Safety_PostClockInit();
+  /* Initialize MPU protection */
+  Safety_MPU_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -96,8 +103,12 @@ int main(void)
   MX_SPI1_Init();
   MX_SPI2_Init();
   MX_CRC_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
-
+  /* Peripheral initialization for safety */
+  Safety_PeripheralInit();
+  /* Pre-initialization before ThreadX */
+  App_PreInit();
   /* USER CODE END 2 */
 
   MX_ThreadX_Init();
@@ -132,8 +143,9 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 4;

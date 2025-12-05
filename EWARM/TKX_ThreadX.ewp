@@ -245,6 +245,7 @@
           <state></state>
           <state></state>
           <state></state>
+          <state></state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -378,6 +379,10 @@
           <state>$PROJ_DIR$/../Middlewares/ST/threadx/common/inc/</state>
           <state>$PROJ_DIR$/../Middlewares/ST/threadx/ports/cortex_m4/iar/inc/</state>
           <state>$PROJ_DIR$/../Middlewares/ST/threadx/utility/low_power/</state>
+          <state>$PROJ_DIR$/../App/Inc</state>
+          <state>$PROJ_DIR$/../Safety/Inc</state>
+          <state>$PROJ_DIR$/../Services/Inc</state>
+          <state>$PROJ_DIR$/../Shared/Inc</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1179,6 +1184,9 @@
           <name>$PROJ_DIR$\..\Core\Src\dma.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$/../Core/Src/iwdg.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\Core\Src\sdio.c</name>
         </file>
         <file>
@@ -1217,6 +1225,42 @@
             <name>$PROJ_DIR$/../AZURE_RTOS/App/app_azure_rtos.c</name>
           </file>
         </group>
+      </group>
+      <group>
+        <name>App</name>
+        <file>
+          <name>$PROJ_DIR$/../App/Src/app_main.c</name>
+        </file>
+      </group>
+      <group>
+        <name>Safety</name>
+        <file>
+          <name>$PROJ_DIR$/../Safety/Src/safety_core.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Safety/Src/safety_flow.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Safety/Src/safety_monitor.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Safety/Src/safety_mpu.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Safety/Src/safety_selftest.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Safety/Src/safety_stack.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Safety/Src/safety_watchdog.c</name>
+        </file>
+      </group>
+      <group>
+        <name>Services</name>
+        <file>
+          <name>$PROJ_DIR$/../Services/Src/svc_params.c</name>
+        </file>
       </group>
     </group>
   </group>
@@ -1277,6 +1321,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_exti.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_sdmmc.c</name>

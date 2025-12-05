@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "app_main.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -85,7 +85,8 @@ VOID tx_application_define(VOID *first_unused_memory)
   else
   {
     /* USER CODE BEGIN TX_Byte_Pool_Success */
-
+    /* Create application threads (including Safety Monitor) */
+    App_CreateThreads(&tx_app_byte_pool);
     /* USER CODE END TX_Byte_Pool_Success */
 
     memory_ptr = (VOID *)&tx_app_byte_pool;
