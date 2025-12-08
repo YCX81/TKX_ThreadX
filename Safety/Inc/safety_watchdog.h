@@ -38,6 +38,20 @@ typedef uint8_t wdg_token_t;
  */
 
 /* ============================================================================
+ * Dual Watchdog Configuration
+ * ============================================================================*/
+
+/* Enable/disable WWDG (Window Watchdog) for dual-channel safety */
+#ifndef WWDG_ENABLED
+#define WWDG_ENABLED            1   /* WWDG enabled for dual-channel watchdog */
+#endif
+
+/* WWDG timing parameters (based on 42MHz PCLK1) */
+#define WWDG_PRESCALER          8U          /* WWDG_CFR prescaler */
+#define WWDG_WINDOW             0x50U       /* Window value (80) */
+#define WWDG_COUNTER            0x7FU       /* Counter value (127) */
+
+/* ============================================================================
  * Watchdog Status
  * ============================================================================*/
 
@@ -48,6 +62,11 @@ typedef struct {
     uint8_t  tokens_required;       /* Required tokens mask */
     bool     enabled;               /* Watchdog enabled flag */
     bool     degraded_mode;         /* In degraded mode */
+#if WWDG_ENABLED
+    uint32_t wwdg_feed_count;       /* WWDG feed count */
+    uint32_t wwdg_last_feed;        /* Last WWDG feed time */
+    bool     wwdg_enabled;          /* WWDG enabled flag */
+#endif
 } wdg_status_t;
 
 /* ============================================================================
@@ -119,6 +138,27 @@ void Safety_Watchdog_SetRequiredTokens(uint8_t tokens_mask);
  * @note Can be used for timeout detection
  */
 void Safety_Watchdog_TickHandler(void);
+
+#if WWDG_ENABLED
+/**
+ * @brief Initialize and start WWDG
+ * @note WWDG cannot be stopped once started
+ * @retval safety_status_t Status
+ */
+safety_status_t Safety_Watchdog_StartWWDG(void);
+
+/**
+ * @brief Feed the WWDG
+ * @note Must be called within the window period
+ */
+void Safety_Watchdog_FeedWWDG(void);
+
+/**
+ * @brief WWDG early wakeup interrupt handler
+ * @note Called when WWDG counter reaches 0x40
+ */
+void Safety_Watchdog_WWDG_IRQHandler(void);
+#endif
 
 #ifdef __cplusplus
 }

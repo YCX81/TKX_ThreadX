@@ -64,10 +64,10 @@ extern U32 SystemCoreClock;
 **********************************************************************
 */
 // The application name to be displayed in SystemViewer
-#define SYSVIEW_APP_NAME        	"ThreadX Demo Application"
+#define SYSVIEW_APP_NAME        	"TKX_ThreadX Safety App"
 
 // The target device name
-#define SYSVIEW_DEVICE_NAME     	"Cortex-M4"
+#define SYSVIEW_DEVICE_NAME     	"STM32F407VGT6"
 
 // Frequency of the timestamp. Must match SEGGER_SYSVIEW_GET_TIMESTAMP in SEGGER_SYSVIEW_Conf.h
 #define SYSVIEW_TIMESTAMP_FREQ  	(SystemCoreClock)

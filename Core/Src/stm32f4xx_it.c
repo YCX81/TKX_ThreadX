@@ -22,6 +22,8 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "wwdg.h"
+#include "safety_watchdog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,6 +62,7 @@ extern DMA_HandleTypeDef hdma_spi1_rx;
 extern DMA_HandleTypeDef hdma_spi1_tx;
 extern DMA_HandleTypeDef hdma_spi2_rx;
 extern DMA_HandleTypeDef hdma_spi2_tx;
+extern WWDG_HandleTypeDef hwwdg;
 extern TIM_HandleTypeDef htim6;
 
 /* USER CODE BEGIN EV */
@@ -163,6 +166,23 @@ void DebugMon_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles Window watchdog interrupt.
+  */
+void WWDG_IRQHandler(void)
+{
+  /* USER CODE BEGIN WWDG_IRQn 0 */
+#if WWDG_ENABLED
+  /* Call safety watchdog handler before HAL handler */
+  Safety_Watchdog_WWDG_IRQHandler();
+#endif
+  /* USER CODE END WWDG_IRQn 0 */
+  HAL_WWDG_IRQHandler(&hwwdg);
+  /* USER CODE BEGIN WWDG_IRQn 1 */
+
+  /* USER CODE END WWDG_IRQn 1 */
+}
 
 /**
   * @brief This function handles DMA1 stream3 global interrupt.

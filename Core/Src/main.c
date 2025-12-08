@@ -25,6 +25,7 @@
 #include "sdio.h"
 #include "spi.h"
 #include "usart.h"
+#include "wwdg.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -106,6 +107,7 @@ int main(void)
   MX_CRC_Init();
   MX_IWDG_Init();
   MX_USART1_UART_Init();
+  MX_WWDG_Init();
   /* USER CODE BEGIN 2 */
   /* Peripheral initialization for safety */
   Safety_PeripheralInit();

@@ -247,6 +247,7 @@
           <state></state>
           <state></state>
           <state></state>
+          <state></state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1202,6 +1203,9 @@
           <name>$PROJ_DIR$/../Core/Src/usart.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$/../Core/Src/wwdg.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\Core\Src\stm32f4xx_it.c</name>
         </file>
         <file>
@@ -1264,6 +1268,9 @@
         <file>
           <name>$PROJ_DIR$/../Safety/Src/safety_watchdog.c</name>
         </file>
+        <file>
+          <name>$PROJ_DIR$/../Safety/Src/safety_params.c</name>
+        </file>
       </group>
       <group>
         <name>Services</name>
@@ -1278,6 +1285,9 @@
     <file>
       <name>$PROJ_DIR$/../BSP/Src/bsp_w25qxx.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$/../BSP/Src/bsp_sysview.c</name>
+    </file>
   </group>
   <group>
     <name>ThirdParty</name>
@@ -1288,6 +1298,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$/../ThirdParty/SEGGER/RTT/SEGGER_RTT_printf.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../ThirdParty/SEGGER/RTT/SEGGER_RTT_ASM_ARMv7M.S</name>
       </file>
     </group>
     <group>
@@ -1378,6 +1391,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$/../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c</name>
       </file>
     </group>
   </group>

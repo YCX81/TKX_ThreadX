@@ -13,6 +13,14 @@
 #include "stm32f4xx_hal.h"
 #include "iwdg.h"
 
+#if WWDG_ENABLED
+#include "wwdg.h"
+#endif
+
+#if DIAG_RTT_ENABLED
+#include "bsp_debug.h"
+#endif
+
 /* Private variables ---------------------------------------------------------*/
 static wdg_status_t s_wdg_status;
 static uint32_t s_token_timestamp[8]; /* Timestamp per token bit */
@@ -31,6 +39,12 @@ safety_status_t Safety_Watchdog_Init(void)
     s_wdg_status.tokens_required = WDG_TOKEN_ALL;
     s_wdg_status.enabled = false;
     s_wdg_status.degraded_mode = false;
+
+#if WWDG_ENABLED
+    s_wdg_status.wwdg_feed_count = 0;
+    s_wdg_status.wwdg_last_feed = 0;
+    s_wdg_status.wwdg_enabled = false;
+#endif
 
     /* Clear token timestamps */
     for (int i = 0; i < 8; i++)
@@ -199,3 +213,69 @@ void Safety_Watchdog_TickHandler(void)
     /* Can be used for additional timeout detection */
     /* Called from SysTick if needed */
 }
+
+/* ============================================================================
+ * WWDG (Window Watchdog) Implementation
+ * ============================================================================*/
+
+#if WWDG_ENABLED
+
+safety_status_t Safety_Watchdog_StartWWDG(void)
+{
+    if (!s_initialized)
+    {
+        return SAFETY_ERROR;
+    }
+
+    /* WWDG is initialized by CubeMX in MX_WWDG_Init() */
+    /* Enable WWDG */
+    s_wdg_status.wwdg_enabled = true;
+    s_wdg_status.wwdg_last_feed = HAL_GetTick();
+    s_wdg_status.wwdg_feed_count = 0;
+
+#if DIAG_RTT_ENABLED
+    DEBUG_INFO("WWDG: Started (dual watchdog active)");
+#endif
+
+    return SAFETY_OK;
+}
+
+void Safety_Watchdog_FeedWWDG(void)
+{
+    if (!s_wdg_status.wwdg_enabled)
+    {
+        return;
+    }
+
+    /* Refresh WWDG counter */
+    HAL_WWDG_Refresh(&hwwdg);
+
+    s_wdg_status.wwdg_last_feed = HAL_GetTick();
+    s_wdg_status.wwdg_feed_count++;
+}
+
+void Safety_Watchdog_WWDG_IRQHandler(void)
+{
+    /*
+     * WWDG Early Wakeup Interrupt
+     * This is called when counter reaches 0x40 (before reset at 0x3F)
+     * We have a small window to feed the watchdog or log error
+     */
+
+#if DIAG_RTT_ENABLED
+    DEBUG_ERROR("WWDG: Early wakeup! Counter about to expire");
+#endif
+
+    /* Try to feed if possible, otherwise system will reset */
+    if (s_wdg_status.wwdg_enabled && Safety_Watchdog_CheckAllTokens())
+    {
+        Safety_Watchdog_FeedWWDG();
+    }
+    else
+    {
+        /* Log error before reset */
+        Safety_ReportError(SAFETY_ERR_WATCHDOG, 0xAADD0000UL, s_wdg_status.tokens_received);
+    }
+}
+
+#endif /* WWDG_ENABLED */

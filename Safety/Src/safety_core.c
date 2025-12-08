@@ -17,7 +17,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "safety_core.h"
 #include "stm32f4xx_hal.h"
+#include "main.h"
 #include <string.h>
+
+#if DIAG_RTT_ENABLED
+#include "bsp_debug.h"
+#endif
 
 /* Private defines -----------------------------------------------------------*/
 #define ERROR_LOG_SIZE      ERROR_LOG_MAX_ENTRIES
@@ -370,8 +375,57 @@ uint32_t Safety_GetUptime(void)
 
 void Safety_PrintDiagnostics(void)
 {
+    static const char* state_names[] = {
+        "INIT", "STARTUP_TEST", "NORMAL", "DEGRADED", "SAFE", "ERROR"
+    };
+
+    static const char* error_names[] = {
+        "NONE", "CPU_TEST", "RAM_TEST", "FLASH_CRC", "CLOCK",
+        "WATCHDOG", "STACK_OVERFLOW", "FLOW_MONITOR", "PARAM_INVALID",
+        "RUNTIME_TEST", "MPU_FAULT", "HARDFAULT", "BUSFAULT",
+        "USAGEFAULT", "NMI", "INTERNAL"
+    };
+
+#if DIAG_RTT_ENABLED
+    uint32_t state_idx = (s_safety_ctx.state <= SAFETY_STATE_SAFE) ?
+                          s_safety_ctx.state : 5;
+    uint32_t error_idx = (s_safety_ctx.last_error <= SAFETY_ERR_NMI) ?
+                          s_safety_ctx.last_error :
+                          (s_safety_ctx.last_error == SAFETY_ERR_INTERNAL ? 15 : 0);
+
+    DEBUG_INFO("========== Safety Diagnostics ==========");
+    DEBUG_INFO("State:       %s", state_names[state_idx]);
+    DEBUG_INFO("Last Error:  %s", error_names[error_idx]);
+    DEBUG_INFO("Error Count: %lu", s_safety_ctx.error_count);
+    DEBUG_INFO("Uptime:      %lu ms", Safety_GetUptime());
+    DEBUG_INFO("Startup OK:  %s", s_safety_ctx.startup_test_passed ? "Yes" : "No");
+    DEBUG_INFO("Params OK:   %s", s_safety_ctx.params_valid ? "Yes" : "No");
+    DEBUG_INFO("MPU Active:  %s", s_safety_ctx.mpu_enabled ? "Yes" : "No");
+    DEBUG_INFO("WDG Active:  %s", s_safety_ctx.watchdog_active ? "Yes" : "No");
+
+    /* Print recent error log entries */
+    DEBUG_INFO("--- Error Log (last 4) ---");
+    for (uint32_t i = 0; i < 4 && i < ERROR_LOG_SIZE; i++)
+    {
+        uint32_t idx = (s_error_log_index + ERROR_LOG_SIZE - 1 - i) % ERROR_LOG_SIZE;
+        if (s_error_log[idx].error_code != 0)
+        {
+            uint32_t err_idx = (s_error_log[idx].error_code <= SAFETY_ERR_NMI) ?
+                               s_error_log[idx].error_code : 0;
+            DEBUG_INFO("[%lu] %s @%lu P1=%lX P2=%lX",
+                       i, error_names[err_idx],
+                       s_error_log[idx].timestamp,
+                       s_error_log[idx].param1,
+                       s_error_log[idx].param2);
+        }
+    }
+    DEBUG_INFO("=========================================");
+#endif
+
 #if DIAG_UART_ENABLED
-    /* TODO: Implement UART diagnostic output */
+    /* UART output placeholder */
+    (void)state_names;
+    (void)error_names;
 #endif
 }
 
@@ -427,6 +481,19 @@ static void Safety_LogError(safety_error_t error, uint32_t param1, uint32_t para
     entry->param2 = param2;
 
     s_error_log_index = (s_error_log_index + 1) % ERROR_LOG_SIZE;
+
+#if DIAG_RTT_ENABLED
+    static const char* error_names[] = {
+        "NONE", "CPU_TEST", "RAM_TEST", "FLASH_CRC", "CLOCK",
+        "WATCHDOG", "STACK_OVERFLOW", "FLOW_MONITOR", "PARAM_INVALID",
+        "RUNTIME_TEST", "MPU_FAULT", "HARDFAULT", "BUSFAULT",
+        "USAGEFAULT", "NMI", "INTERNAL"
+    };
+    uint32_t err_idx = (error <= SAFETY_ERR_NMI) ? error :
+                       (error == SAFETY_ERR_INTERNAL ? 15 : 0);
+    DEBUG_ERROR("Safety Error: %s (P1=0x%08lX, P2=0x%08lX)",
+                error_names[err_idx], param1, param2);
+#endif
 }
 
 static void Safety_CallErrorCallback(safety_error_t error)
@@ -439,6 +506,27 @@ static void Safety_CallErrorCallback(safety_error_t error)
 
 static void Safety_CallStateCallback(safety_state_t old_state, safety_state_t new_state)
 {
+#if DIAG_RTT_ENABLED
+    static const char* state_names[] = {
+        "INIT", "STARTUP_TEST", "NORMAL", "DEGRADED", "SAFE", "ERROR"
+    };
+    uint32_t old_idx = (old_state <= SAFETY_STATE_SAFE) ? old_state : 5;
+    uint32_t new_idx = (new_state <= SAFETY_STATE_SAFE) ? new_state : 5;
+
+    if (new_state == SAFETY_STATE_SAFE)
+    {
+        DEBUG_ERROR("Safety State: %s -> %s", state_names[old_idx], state_names[new_idx]);
+    }
+    else if (new_state == SAFETY_STATE_DEGRADED)
+    {
+        DEBUG_WARN("Safety State: %s -> %s", state_names[old_idx], state_names[new_idx]);
+    }
+    else
+    {
+        DEBUG_INFO("Safety State: %s -> %s", state_names[old_idx], state_names[new_idx]);
+    }
+#endif
+
     if (s_safety_ctx.state_cb != NULL)
     {
         s_safety_ctx.state_cb(old_state, new_state);
@@ -447,12 +535,46 @@ static void Safety_CallStateCallback(safety_state_t old_state, safety_state_t ne
 
 static void Safety_SetSafeOutputs(void)
 {
-    /* Set all safety-critical outputs to safe state */
-    /* This should be customized based on application requirements */
+    /*
+     * Set all safety-critical outputs to safe state
+     * Called when entering SAFE state after critical error
+     *
+     * Safe State Definition:
+     * - All motor/actuator outputs: OFF (low)
+     * - Status LED: ON (indicate error state)
+     * - Communication interfaces: Disabled
+     * - SPI Flash: CS high (deselected)
+     */
 
-    /* Example: Set LED to indicate error */
-    /* HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_SET); */
+#if DIAG_RTT_ENABLED
+    DEBUG_ERROR("Setting outputs to SAFE state");
+#endif
 
-    /* Example: Disable motor outputs */
-    /* HAL_GPIO_WritePin(MOTOR_EN_GPIO_Port, MOTOR_EN_Pin, GPIO_PIN_RESET); */
+    /* 1. Status LED - Turn ON to indicate error */
+#ifdef LED_G_Pin
+    HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_SET);
+#endif
+
+    /* 2. LCD Backlight - Turn OFF */
+#ifdef LCD_BLK_Pin
+    HAL_GPIO_WritePin(LCD_BLK_GPIO_Port, LCD_BLK_Pin, GPIO_PIN_RESET);
+#endif
+
+    /* 3. SPI Flash - Deselect (CS high) */
+#ifdef SPI_FLASH_CS_Pin
+    HAL_GPIO_WritePin(SPI_FLASH_CS_GPIO_Port, SPI_FLASH_CS_Pin, GPIO_PIN_SET);
+#endif
+
+    /* 4. LCD - Deselect (CS high) */
+#ifdef LCD_CS_Pin
+    HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
+#endif
+
+    /*
+     * Application-specific safe outputs should be added here:
+     * - Motor enable pins -> LOW
+     * - Relay controls -> Safe position
+     * - Analog outputs -> Zero/safe value
+     * - PWM outputs -> Disabled
+     */
 }

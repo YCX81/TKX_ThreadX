@@ -501,3 +501,192 @@ typedef struct {
 | `STACK_CRITICAL_THRESHOLD` | 90% | 栈临界阈值 |
 | `CLOCK_TOLERANCE_PERCENT` | 5% | 时钟误差容限 |
 | `SELFTEST_FLASH_CRC_BLOCK_SIZE` | 4KB | Flash CRC 块大小 |
+
+---
+
+## 8. Safety Params (参数验证)
+
+### 概述
+
+参数验证模块负责：
+- 验证安全参数结构完整性
+- 检查参数范围有效性
+- 验证冗余副本一致性
+- 周期性参数完整性检查
+
+### 验证结果
+
+```c
+typedef enum {
+    PARAMS_VALID            = 0x00U,    /* 参数有效 */
+    PARAMS_ERR_MAGIC        = 0x01U,    /* 魔数无效 */
+    PARAMS_ERR_VERSION      = 0x02U,    /* 版本不匹配 */
+    PARAMS_ERR_SIZE         = 0x03U,    /* 大小不匹配 */
+    PARAMS_ERR_CRC          = 0x04U,    /* CRC 错误 */
+    PARAMS_ERR_HALL_RANGE   = 0x05U,    /* HALL 参数越界 */
+    PARAMS_ERR_ADC_RANGE    = 0x06U,    /* ADC 参数越界 */
+    PARAMS_ERR_THRESHOLD    = 0x07U,    /* 阈值越界 */
+    PARAMS_ERR_REDUNDANCY   = 0x08U,    /* 冗余检查失败 */
+} params_result_t;
+```
+
+### API
+
+| 函数 | 说明 |
+|------|------|
+| `Safety_Params_Init()` | 初始化模块 |
+| `Safety_Params_Validate()` | 验证参数结构 |
+| `Safety_Params_ValidateFlash()` | 验证 Flash 中的参数 |
+| `Safety_Params_Get()` | 获取已验证参数 |
+| `Safety_Params_IsValid()` | 检查参数有效性 |
+| `Safety_Params_PeriodicCheck()` | 周期性完整性检查 |
+
+### 验证流程
+
+```
+1. 验证头部 (magic, version, size)
+2. 验证 CRC32
+3. 验证 HALL 参数范围
+4. 验证 ADC 参数范围
+5. 验证安全阈值范围
+6. 验证冗余副本 (位取反)
+```
+
+### 参数范围定义
+
+```c
+#define HALL_OFFSET_MIN         (-1000.0f)
+#define HALL_OFFSET_MAX         (1000.0f)
+#define HALL_GAIN_MIN           (0.5f)
+#define HALL_GAIN_MAX           (2.0f)
+#define ADC_GAIN_MIN            (0.8f)
+#define ADC_GAIN_MAX            (1.2f)
+```
+
+---
+
+## 9. 双看门狗 (IWDG + WWDG)
+
+### 概述
+
+双通道看门狗提供更高可靠性：
+- **IWDG**: 独立看门狗，使用 LSI 时钟
+- **WWDG**: 窗口看门狗，使用 PCLK1 时钟
+
+### 配置
+
+```c
+/* WWDG 启用/禁用 */
+#define WWDG_ENABLED            0   /* 需要在 CubeMX 中配置后设为 1 */
+
+/* WWDG 时序参数 */
+#define WWDG_PRESCALER          8U
+#define WWDG_WINDOW             0x50U   /* 窗口值 */
+#define WWDG_COUNTER            0x7FU   /* 计数器值 */
+```
+
+### API (WWDG 扩展)
+
+| 函数 | 说明 |
+|------|------|
+| `Safety_Watchdog_StartWWDG()` | 启动 WWDG |
+| `Safety_Watchdog_FeedWWDG()` | 喂 WWDG |
+| `Safety_Watchdog_WWDG_IRQHandler()` | WWDG 早期唤醒中断 |
+
+### 双看门狗优势
+
+| 特性 | IWDG | WWDG |
+|------|------|------|
+| 时钟源 | LSI (独立) | PCLK1 (系统) |
+| 复位条件 | 超时 | 超时或过早喂狗 |
+| 检测能力 | 卡死检测 | 时序异常检测 |
+| 精度 | 低 | 高 |
+
+---
+
+## 10. 诊断输出 (RTT/SystemView)
+
+### Segger RTT 诊断
+
+RTT 提供实时调试输出，不占用 GPIO：
+
+```c
+/* bsp_debug.h */
+#define DEBUG_INFO(fmt, ...)    SEGGER_RTT_printf(0, "[INF] " fmt "\r\n", ##__VA_ARGS__)
+#define DEBUG_WARN(fmt, ...)    SEGGER_RTT_printf(0, "[WRN] " fmt "\r\n", ##__VA_ARGS__)
+#define DEBUG_ERROR(fmt, ...)   SEGGER_RTT_printf(0, "[ERR] " fmt "\r\n", ##__VA_ARGS__)
+```
+
+### SystemView ThreadX 跟踪
+
+SystemView 提供 RTOS 可视化分析：
+
+```c
+/* bsp_sysview.h */
+#define SYSVIEW_ENABLED         0   /* 设为 1 启用 */
+
+/* 初始化 */
+BSP_SysView_Init();
+
+/* 自定义事件记录 */
+BSP_SysView_RecordEvent(0, "Safety check passed");
+BSP_SysView_RecordValue(1, temperature);
+```
+
+### 使用工具
+
+| 工具 | 用途 |
+|------|------|
+| J-Link RTT Viewer | 查看 RTT 调试输出 |
+| Segger SystemView | 可视化 ThreadX 线程/中断 |
+
+---
+
+## 安全开发流程
+
+### 1. 代码风格规范
+
+```c
+/**
+ ******************************************************************************
+ * @file    safety_xxx.h
+ * @brief   Module Description
+ * @author  YCX81
+ * @version V1.0.0
+ ******************************************************************************
+ */
+
+/* 章节分隔符 */
+/* ============================================================================
+ * Section Name
+ * ============================================================================*/
+
+/* 静态变量前缀 */
+static xxx_t s_variable_name;
+
+/* 函数命名 */
+safety_status_t Safety_Module_Function(void);
+```
+
+### 2. IEC 61508 SIL 2 合规检查清单
+
+| 项目 | 状态 | 说明 |
+|------|------|------|
+| CPU 自检 | ✓ | 寄存器模式测试 |
+| RAM 自检 | ✓ | March C 算法 |
+| Flash CRC | ✓ | 启动+增量验证 |
+| 时钟监控 | ✓ | 频率范围检查 |
+| 看门狗 | ✓ | 令牌机制 + 可选双通道 |
+| 栈监控 | ✓ | ThreadX 集成 |
+| 程序流 | ✓ | 签名累积 |
+| MPU 保护 | ✓ | 6 区域配置 |
+| 参数验证 | ✓ | CRC + 范围 + 冗余 |
+| 错误日志 | ✓ | 循环缓冲区 |
+| 诊断输出 | ✓ | RTT + SystemView |
+
+### 3. 待完成项
+
+- [ ] 正式 FMEA 文档
+- [ ] 故障注入测试用例
+- [ ] 代码覆盖率分析
+- [ ] 汇编级 CPU 测试 (可选)

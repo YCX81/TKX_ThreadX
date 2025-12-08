@@ -15,6 +15,15 @@
 #include "safety_stack.h"
 #include "safety_flow.h"
 #include "safety_mpu.h"
+#include "safety_config.h"
+
+#if WWDG_ENABLED
+#include "wwdg.h"
+#endif
+
+#if DIAG_RTT_ENABLED
+#include "bsp_debug.h"
+#endif
 
 /* Private defines -----------------------------------------------------------*/
 #define MONITOR_THREAD_NAME     "Safety Monitor"
@@ -88,31 +97,66 @@ void Safety_Monitor_ThreadEntry(ULONG thread_input)
 {
     (void)thread_input;
 
+#if DIAG_RTT_ENABLED
+    DEBUG_INFO("========================================");
+    DEBUG_INFO("  Safety Monitor Thread Started");
+    DEBUG_INFO("  IEC 61508 SIL 2 / ISO 13849 PL d");
+    DEBUG_INFO("========================================");
+#endif
+
     /* Initialize safety modules */
     Safety_SelfTest_Init();
     Safety_Watchdog_Init();
     Safety_Stack_Init();
     Safety_Flow_Init();
 
-    /* Start watchdog */
+#if DIAG_RTT_ENABLED
+    DEBUG_INFO("Safety modules initialized");
+#endif
+
+    /* Start watchdog (IWDG) */
     Safety_Watchdog_Start();
+
+#if WWDG_ENABLED
+    /* Initialize and start WWDG for dual-channel watchdog */
+    MX_WWDG_Init();
+    Safety_Watchdog_StartWWDG();
+#if DIAG_RTT_ENABLED
+    DEBUG_INFO("Dual watchdog enabled (IWDG + WWDG)");
+#endif
+#endif
 
     /* Initialize flow checkpoint */
     Safety_Flow_Checkpoint(PFM_CP_APP_INIT);
 
     /* Run startup self-test */
+#if DIAG_RTT_ENABLED
+    DEBUG_INFO("Running startup self-tests...");
+#endif
+
     selftest_result_t selftest_result = Safety_SelfTest_RunStartup();
     if (selftest_result != SELFTEST_PASS)
     {
+#if DIAG_RTT_ENABLED
+        DEBUG_ERROR("Startup self-test FAILED! (result=%d)", selftest_result);
+#endif
         Safety_EnterSafeState(SAFETY_ERR_RUNTIME_TEST);
         /* Will not return if safe state is blocking */
     }
+
+#if DIAG_RTT_ENABLED
+    DEBUG_INFO("Startup self-tests PASSED");
+#endif
 
     /* Mark startup test passed */
     Safety_StartupTest();
 
     /* Transition to normal operation */
     Safety_PreKernelInit();
+
+#if DIAG_RTT_ENABLED
+    DEBUG_INFO("Safety system entering NORMAL operation");
+#endif
 
     /* Initialize flash CRC timer */
     s_flash_crc_timer = 0;

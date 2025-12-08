@@ -92,9 +92,30 @@ Additional information:
 
 
 /*********************************************************************
-* TODO: Add your defines here.                                       *
+* STM32F407 Configuration for TKX_ThreadX Project
 **********************************************************************
 */
+
+/* RAM base address for ID compression */
+#define SEGGER_SYSVIEW_ID_BASE          0x20000000
+
+/* Number of bits used for ID compression (adjust based on RAM size) */
+#define SEGGER_SYSVIEW_ID_SHIFT         2
+
+/* RTT buffer configuration */
+#define SEGGER_SYSVIEW_RTT_BUFFER_SIZE  4096
+
+/* Use Cortex-M cycle counter for timestamps */
+#define SEGGER_SYSVIEW_GET_TIMESTAMP()  (*(volatile unsigned int *)(0xE0001004))
+
+/* Get current interrupt ID */
+#define SEGGER_SYSVIEW_GET_INTERRUPT_ID() ((*(volatile unsigned int *)(0xE000ED04)) & 0x1FF)
+
+/* Post mortem mode (0=off, 1=on) */
+#define SEGGER_SYSVIEW_POST_MORTEM_MODE 0
+
+/* Enable recording on SystemView start */
+#define SEGGER_SYSVIEW_START_ON_INIT    1
 
 
 #endif  // SEGGER_SYSVIEW_CONF_H
