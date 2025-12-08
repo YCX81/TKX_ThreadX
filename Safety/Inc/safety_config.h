@@ -144,8 +144,9 @@ typedef struct {
 /* ============================================================================
  * Diagnostic Interface Configuration
  * ============================================================================*/
-#define DIAG_UART_ENABLED           1           /* Enable UART diagnostics */
-#define DIAG_UART_BAUDRATE          115200U     /* Diagnostic UART baudrate */
+#define DIAG_UART_ENABLED           0           /* Disable UART diagnostics */
+#define DIAG_RTT_ENABLED            1           /* Enable Segger RTT diagnostics */
+#define DIAG_UART_BAUDRATE          115200U     /* Diagnostic UART baudrate (if enabled) */
 
 /* ============================================================================
  * Clock Configuration

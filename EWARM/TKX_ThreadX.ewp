@@ -246,6 +246,7 @@
           <state></state>
           <state></state>
           <state></state>
+          <state></state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -383,6 +384,11 @@
           <state>$PROJ_DIR$/../Safety/Inc</state>
           <state>$PROJ_DIR$/../Services/Inc</state>
           <state>$PROJ_DIR$/../Shared/Inc</state>
+          <state>$PROJ_DIR$/../BSP/Inc</state>
+          <state>$PROJ_DIR$/../ThirdParty/SEGGER/RTT</state>
+          <state>$PROJ_DIR$/../ThirdParty/SEGGER/Config</state>
+          <state>$PROJ_DIR$/../ThirdParty/SEGGER</state>
+          <state>$PROJ_DIR$/../ThirdParty/SEGGER/SystemView</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1193,6 +1199,9 @@
           <name>$PROJ_DIR$\..\Core\Src\spi.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$/../Core/Src/usart.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\Core\Src\stm32f4xx_it.c</name>
         </file>
         <file>
@@ -1262,6 +1271,36 @@
           <name>$PROJ_DIR$/../Services/Src/svc_params.c</name>
         </file>
       </group>
+    </group>
+  </group>
+  <group>
+    <name>BSP</name>
+    <file>
+      <name>$PROJ_DIR$/../BSP/Src/bsp_w25qxx.c</name>
+    </file>
+  </group>
+  <group>
+    <name>ThirdParty</name>
+    <group>
+      <name>SEGGER_RTT</name>
+      <file>
+        <name>$PROJ_DIR$/../ThirdParty/SEGGER/RTT/SEGGER_RTT.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../ThirdParty/SEGGER/RTT/SEGGER_RTT_printf.c</name>
+      </file>
+    </group>
+    <group>
+      <name>SEGGER_SystemView</name>
+      <file>
+        <name>$PROJ_DIR$/../ThirdParty/SEGGER/SystemView/SEGGER_SYSVIEW.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../ThirdParty/SEGGER/SystemView/SEGGER_SYSVIEW_ThreadX.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../ThirdParty/SEGGER/Config/SEGGER_SYSVIEW_Config_ThreadX.c</name>
+      </file>
     </group>
   </group>
   <group>
@@ -1336,6 +1375,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_spi.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c</name>
       </file>
     </group>
   </group>

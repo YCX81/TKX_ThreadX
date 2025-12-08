@@ -67,8 +67,8 @@ void Error_Handler(void);
 #define LCD_SDA_GPIO_Port GPIOC
 #define KEY_Pin GPIO_PIN_0
 #define KEY_GPIO_Port GPIOA
-#define SPI_FLASH_NSS_Pin GPIO_PIN_4
-#define SPI_FLASH_NSS_GPIO_Port GPIOA
+#define SPI_FLASH_CS_Pin GPIO_PIN_4
+#define SPI_FLASH_CS_GPIO_Port GPIOA
 #define SPI_FLASH_SCK_Pin GPIO_PIN_5
 #define SPI_FLASH_SCK_GPIO_Port GPIOA
 #define SPI_FLASH_MISO_Pin GPIO_PIN_6
@@ -87,6 +87,38 @@ void Error_Handler(void);
 #define SD_CARD_DET_GPIO_Port GPIOD
 
 /* USER CODE BEGIN Private defines */
+
+/* ============================================================================
+ * Board Pin Aliases
+ * ============================================================================*/
+
+/* Wake-up Button (alias for KEY on PA0) */
+#define WKUP_Pin                KEY_Pin
+#define WKUP_GPIO_Port          KEY_GPIO_Port
+
+/* USB FS Pins */
+#define USB_FS_DM_Pin           GPIO_PIN_11
+#define USB_FS_DM_GPIO_Port     GPIOA
+#define USB_FS_DP_Pin           GPIO_PIN_12
+#define USB_FS_DP_GPIO_Port     GPIOA
+
+/* USART1 Pins (Debug) */
+#define USART1_TX_Pin           GPIO_PIN_9
+#define USART1_TX_GPIO_Port     GPIOA
+#define USART1_RX_Pin           GPIO_PIN_10
+#define USART1_RX_GPIO_Port     GPIOA
+
+/* Debug Port (SWD) - Reference Only */
+#define SWDIO_Pin               GPIO_PIN_13
+#define SWDIO_GPIO_Port         GPIOA
+#define SWCLK_Pin               GPIO_PIN_14
+#define SWCLK_GPIO_Port         GPIOA
+#define SWO_Pin                 GPIO_PIN_3
+#define SWO_GPIO_Port           GPIOB
+
+/* Boot Configuration Reference */
+/* BOOT0: External pin (via resistor to GND/VCC) */
+/* BOOT1/PB2: Shared with LED_G */
 
 /* USER CODE END Private defines */
 
