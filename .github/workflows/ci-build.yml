@@ -221,7 +221,15 @@ jobs:
           }
 
   # ===========================================================================
-  # Job 5: 构建摘要 / Build Summary
+  # Job 5: C-RUN 运行时分析 / Runtime Analysis (Optional)
+  # ===========================================================================
+  # Note: C-RUN 需要在目标硬件或模拟器上运行
+  # C-RUN requires target hardware or simulator
+  # 可以在本地手动执行，或配置硬件在环测试
+  # Can be run locally or configure hardware-in-the-loop testing
+
+  # ===========================================================================
+  # Job 6: 构建摘要 / Build Summary
   # ===========================================================================
   summary:
     name: Build Summary
