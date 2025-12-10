@@ -59,7 +59,7 @@ jobs:
 
       - name: Generate Version Info
         id: version
-        shell: pwsh
+        shell: powershell
         run: |
           $buildNumber = Get-Date -Format "yyMMddHHmm"
           $version = "1.0.0+$buildNumber"
@@ -96,7 +96,7 @@ jobs:
           path: Core/Inc/
 
       - name: Build TKX_ThreadX
-        shell: pwsh
+        shell: powershell
         run: |
           .\ci\scripts\build.ps1 `
             -Configuration "TKX_ThreadX" `
@@ -107,7 +107,7 @@ jobs:
             -Verbose
 
       - name: Verify Build
-        shell: pwsh
+        shell: powershell
         run: |
           $binFile = "artifacts\TKX_ThreadX.bin"
           if (-not (Test-Path $binFile)) {
@@ -144,14 +144,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Bootloader
-        shell: pwsh
+        shell: powershell
         run: |
           .\ci\scripts\build_bootloader.ps1 `
             -IARPath "${{ env.IAR_PATH }}" `
             -Rebuild
 
       - name: Verify Bootloader Size
-        shell: pwsh
+        shell: powershell
         run: |
           $binFile = "artifacts\Bootloader.bin"
           if (Test-Path $binFile) {
@@ -186,7 +186,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run C-STAT
-        shell: pwsh
+        shell: powershell
         run: |
           .\ci\scripts\cstat_analyze.ps1 `
             -Configuration "TKX_ThreadX" `
@@ -200,7 +200,7 @@ jobs:
           retention-days: 30
 
       - name: Check Results
-        shell: pwsh
+        shell: powershell
         run: |
           $summaryFile = "artifacts\cstat\cstat_summary.json"
           if (Test-Path $summaryFile) {
@@ -238,7 +238,7 @@ jobs:
     if: always()
     steps:
       - name: Generate Summary
-        shell: pwsh
+        shell: powershell
         run: |
           $summary = @"
           # TKX_ThreadX 构建摘要 / Build Summary
