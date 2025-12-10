@@ -1,0 +1,68 @@
+# =============================================================================
+# EditorConfig - TKX_ThreadX Project
+# https://editorconfig.org
+# =============================================================================
+# This file helps maintain consistent coding styles across different editors
+# and IDEs. Install EditorConfig plugin for your editor to use this file.
+# =============================================================================
+
+root = true
+
+# Default settings for all files
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# C/C++ source and header files
+[*.{c,h,cpp,hpp}]
+indent_size = 4
+max_line_length = 100
+
+# Assembly files
+[*.{s,S,asm}]
+indent_size = 4
+
+# IAR project files (XML)
+[*.{ewp,ewd,eww,ewt}]
+indent_size = 2
+
+# Linker configuration files
+[*.icf]
+indent_size = 4
+
+# Makefiles require tabs
+[Makefile]
+indent_style = tab
+
+[*.mk]
+indent_style = tab
+
+# YAML files (GitHub Actions, etc.)
+[*.{yml,yaml}]
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = 120
+
+# PowerShell scripts
+[*.ps1]
+indent_size = 4
+charset = utf-8-bom
+
+# Batch files (Windows)
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# Git configuration
+[.git*]
+indent_size = 4

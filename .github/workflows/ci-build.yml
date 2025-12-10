@@ -1,0 +1,249 @@
+# =============================================================================
+# TKX_ThreadX CI/CD Pipeline
+# 功能安全嵌入式项目持续集成 / Functional Safety Embedded CI
+# 合规目标 / Compliance: IEC 61508 SIL 2 / ISO 13849 PL d / MISRA-C:2012
+# =============================================================================
+
+name: CI Build
+
+on:
+  push:
+    branches: [main, develop, 'feature/**', 'release/**', 'hotfix/**']
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '.gitignore'
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      configuration:
+        description: 'Build configuration'
+        required: true
+        default: 'All'
+        type: choice
+        options:
+          - TKX_ThreadX
+          - Bootloader
+          - All
+      run_cstat:
+        description: 'Run C-STAT analysis'
+        required: false
+        default: true
+        type: boolean
+
+# 并发控制 / Concurrency control
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IAR_PATH: 'D:\iar\ewarm-9.70.1'
+  PROJECT_NAME: 'TKX_ThreadX'
+
+jobs:
+  # ===========================================================================
+  # Job 1: 版本信息生成 / Version Generation
+  # ===========================================================================
+  version:
+    name: Generate Version
+    runs-on: [self-hosted, Windows, IAR]
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      build_number: ${{ steps.version.outputs.build_number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Version Info
+        id: version
+        shell: pwsh
+        run: |
+          $buildNumber = Get-Date -Format "yyMMddHHmm"
+          $version = "1.0.0+$buildNumber"
+
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          echo "build_number=$buildNumber" >> $env:GITHUB_OUTPUT
+
+          # 生成版本头文件 / Generate version header
+          .\ci\scripts\generate_version.ps1
+
+      - name: Upload Version Header
+        uses: actions/upload-artifact@v4
+        with:
+          name: version-header
+          path: Core/Inc/version_info.h
+          retention-days: 7
+
+  # ===========================================================================
+  # Job 2: 应用程序构建 / Application Build
+  # ===========================================================================
+  build-app:
+    name: Build Application
+    runs-on: [self-hosted, Windows, IAR]
+    needs: version
+    if: ${{ github.event.inputs.configuration != 'Bootloader' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Version Header
+        uses: actions/download-artifact@v4
+        with:
+          name: version-header
+          path: Core/Inc/
+
+      - name: Build TKX_ThreadX
+        shell: pwsh
+        run: |
+          .\ci\scripts\build.ps1 `
+            -Configuration "TKX_ThreadX" `
+            -IARPath "${{ env.IAR_PATH }}" `
+            -Rebuild `
+            -GenerateHex `
+            -GenerateBin `
+            -Verbose
+
+      - name: Verify Build
+        shell: pwsh
+        run: |
+          $binFile = "artifacts\TKX_ThreadX.bin"
+          if (-not (Test-Path $binFile)) {
+            throw "BIN file not found"
+          }
+          $size = (Get-Item $binFile).Length
+          Write-Host "Application size: $size bytes"
+
+          # 检查大小限制 / Check size limit (448KB)
+          if ($size -gt 458752) {
+            throw "Application exceeds Flash limit (448KB)"
+          }
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-firmware-${{ needs.version.outputs.build_number }}
+          path: |
+            artifacts/TKX_ThreadX.hex
+            artifacts/TKX_ThreadX.bin
+            artifacts/build_info.json
+          retention-days: 30
+
+  # ===========================================================================
+  # Job 3: Bootloader 构建 / Bootloader Build
+  # ===========================================================================
+  build-bootloader:
+    name: Build Bootloader
+    runs-on: [self-hosted, Windows, IAR]
+    needs: version
+    if: ${{ github.event.inputs.configuration != 'TKX_ThreadX' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Bootloader
+        shell: pwsh
+        run: |
+          .\ci\scripts\build_bootloader.ps1 `
+            -IARPath "${{ env.IAR_PATH }}" `
+            -Rebuild
+
+      - name: Verify Bootloader Size
+        shell: pwsh
+        run: |
+          $binFile = "artifacts\Bootloader.bin"
+          if (Test-Path $binFile) {
+            $size = (Get-Item $binFile).Length
+            Write-Host "Bootloader size: $size bytes"
+
+            # 检查大小限制 / Check size limit (48KB)
+            if ($size -gt 49152) {
+              throw "Bootloader exceeds Flash limit (48KB)"
+            }
+          }
+
+      - name: Upload Bootloader
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootloader-firmware-${{ needs.version.outputs.build_number }}
+          path: |
+            artifacts/Bootloader.hex
+            artifacts/Bootloader.bin
+          retention-days: 30
+
+  # ===========================================================================
+  # Job 4: C-STAT 静态分析 / Static Analysis
+  # ===========================================================================
+  static-analysis:
+    name: C-STAT Analysis
+    runs-on: [self-hosted, Windows, IAR]
+    needs: build-app
+    if: ${{ github.event.inputs.run_cstat != 'false' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run C-STAT
+        shell: pwsh
+        run: |
+          .\ci\scripts\cstat_analyze.ps1 `
+            -Configuration "TKX_ThreadX" `
+            -IARPath "${{ env.IAR_PATH }}"
+
+      - name: Upload C-STAT Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: cstat-report-${{ needs.version.outputs.build_number }}
+          path: artifacts/cstat/
+          retention-days: 30
+
+      - name: Check Results
+        shell: pwsh
+        run: |
+          $summaryFile = "artifacts\cstat\cstat_summary.json"
+          if (Test-Path $summaryFile) {
+            $summary = Get-Content $summaryFile | ConvertFrom-Json
+
+            Write-Host "=========================================="
+            Write-Host "C-STAT Summary"
+            Write-Host "=========================================="
+            Write-Host "High:   $($summary.high)"
+            Write-Host "Medium: $($summary.medium)"
+            Write-Host "Low:    $($summary.low)"
+            Write-Host "=========================================="
+
+            # 高严重度问题警告 / Warn on high severity
+            if ($summary.high -gt 0) {
+              Write-Warning "$($summary.high) high severity issues found!"
+            }
+          }
+
+  # ===========================================================================
+  # Job 5: 构建摘要 / Build Summary
+  # ===========================================================================
+  summary:
+    name: Build Summary
+    runs-on: [self-hosted, Windows]
+    needs: [version, build-app, build-bootloader, static-analysis]
+    if: always()
+    steps:
+      - name: Generate Summary
+        shell: pwsh
+        run: |
+          $summary = @"
+          # TKX_ThreadX 构建摘要 / Build Summary
+
+          | 项目 / Item | 结果 / Result |
+          |-------------|---------------|
+          | 版本 / Version | ${{ needs.version.outputs.version }} |
+          | 应用构建 / App Build | ${{ needs.build-app.result }} |
+          | Bootloader 构建 | ${{ needs.build-bootloader.result }} |
+          | C-STAT 分析 | ${{ needs.static-analysis.result }} |
+
+          **构建时间 / Build Time**: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+          **合规目标 / Compliance**: IEC 61508 SIL 2 / MISRA-C:2012
+          "@
+
+          echo $summary >> $env:GITHUB_STEP_SUMMARY

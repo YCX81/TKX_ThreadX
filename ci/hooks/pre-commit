@@ -1,0 +1,149 @@
+#!/bin/sh
+#==============================================================================
+# pre-commit - Git Pre-commit Hook
+# TKX_ThreadX 功能安全项目 / Functional Safety Project
+#==============================================================================
+# 安装 / Installation:
+#   cp ci/hooks/pre-commit .git/hooks/
+#   chmod +x .git/hooks/pre-commit
+#==============================================================================
+
+echo "=========================================="
+echo "Pre-commit 检查 / Pre-commit Checks"
+echo "=========================================="
+
+# 获取暂存的文件 / Get staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$STAGED_FILES" ]; then
+    echo "没有暂存的文件 / No staged files"
+    exit 0
+fi
+
+ERRORS=0
+
+#------------------------------------------------------------------------------
+# 检查 1: 文件编码 / Check 1: File Encoding
+#------------------------------------------------------------------------------
+echo ""
+echo "[1/4] 检查文件编码... / Checking file encoding..."
+
+for file in $STAGED_FILES; do
+    if [ -f "$file" ]; then
+        # 检查是否为二进制文件 / Check if binary
+        if file "$file" | grep -q "text"; then
+            # 检查 BOM / Check for BOM (except PowerShell)
+            if echo "$file" | grep -qv "\.ps1$"; then
+                if head -c 3 "$file" | grep -q $'\xef\xbb\xbf'; then
+                    echo "  ❌ UTF-8 BOM 检测到 / BOM detected: $file"
+                    ERRORS=$((ERRORS + 1))
+                fi
+            fi
+        fi
+    fi
+done
+
+if [ $ERRORS -eq 0 ]; then
+    echo "  ✅ 编码检查通过 / Encoding check passed"
+fi
+
+#------------------------------------------------------------------------------
+# 检查 2: 行尾 / Check 2: Line Endings
+#------------------------------------------------------------------------------
+echo ""
+echo "[2/4] 检查行尾... / Checking line endings..."
+
+CRLF_FILES=""
+for file in $STAGED_FILES; do
+    if [ -f "$file" ]; then
+        # 跳过二进制和特定文件 / Skip binary and specific files
+        case "$file" in
+            *.bat|*.cmd|*.ps1|*.ewp|*.ewd|*.eww)
+                continue
+                ;;
+        esac
+
+        if file "$file" | grep -q "text"; then
+            if grep -q $'\r' "$file" 2>/dev/null; then
+                CRLF_FILES="$CRLF_FILES $file"
+                echo "  ⚠️  CRLF 行尾 / CRLF line endings: $file"
+            fi
+        fi
+    fi
+done
+
+if [ -z "$CRLF_FILES" ]; then
+    echo "  ✅ 行尾检查通过 / Line endings check passed"
+fi
+
+#------------------------------------------------------------------------------
+# 检查 3: 尾随空白 / Check 3: Trailing Whitespace
+#------------------------------------------------------------------------------
+echo ""
+echo "[3/4] 检查尾随空白... / Checking trailing whitespace..."
+
+WHITESPACE_FILES=""
+for file in $STAGED_FILES; do
+    if [ -f "$file" ]; then
+        case "$file" in
+            *.c|*.h|*.cpp|*.hpp)
+                if grep -q '[[:space:]]$' "$file" 2>/dev/null; then
+                    WHITESPACE_FILES="$WHITESPACE_FILES $file"
+                    echo "  ⚠️  尾随空白 / Trailing whitespace: $file"
+                fi
+                ;;
+        esac
+    fi
+done
+
+if [ -z "$WHITESPACE_FILES" ]; then
+    echo "  ✅ 空白检查通过 / Whitespace check passed"
+fi
+
+#------------------------------------------------------------------------------
+# 检查 4: 头文件格式 / Check 4: Header File Format
+#------------------------------------------------------------------------------
+echo ""
+echo "[4/4] 检查头文件格式... / Checking header file format..."
+
+HEADER_ERRORS=0
+for file in $STAGED_FILES; do
+    case "$file" in
+        *.h)
+            if [ -f "$file" ]; then
+                # 检查 include guard / Check include guard
+                if ! grep -q "#ifndef __" "$file"; then
+                    echo "  ⚠️  缺少 include guard / Missing include guard: $file"
+                    HEADER_ERRORS=$((HEADER_ERRORS + 1))
+                fi
+
+                # 检查 extern "C" / Check extern "C"
+                if ! grep -q 'extern "C"' "$file"; then
+                    echo "  ⚠️  缺少 extern C / Missing extern C: $file"
+                    HEADER_ERRORS=$((HEADER_ERRORS + 1))
+                fi
+            fi
+            ;;
+    esac
+done
+
+if [ $HEADER_ERRORS -eq 0 ]; then
+    echo "  ✅ 头文件格式检查通过 / Header format check passed"
+fi
+
+#------------------------------------------------------------------------------
+# 结果 / Results
+#------------------------------------------------------------------------------
+echo ""
+echo "=========================================="
+
+if [ $ERRORS -gt 0 ]; then
+    echo "❌ 发现 $ERRORS 个错误，提交已阻止"
+    echo "❌ Found $ERRORS errors, commit blocked"
+    echo "=========================================="
+    exit 1
+else
+    echo "✅ 所有检查通过 / All checks passed"
+    echo "=========================================="
+    exit 0
+fi
