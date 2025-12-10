@@ -2,9 +2,7 @@
 
 **项目 / Project**: TKX_ThreadX
 **合规标准 / Compliance**: IEC 61508 SIL 2 / ISO 13849 PL d
-**版本 / Version**: 1.0.0
-
-> 本文档使用 Mermaid.js 绘制架构图，可在 GitHub、VS Code (Markdown Preview Mermaid) 或其他支持 Mermaid 的工具中查看。
+**版本 / Version**: 1.0.1
 
 ---
 
@@ -945,8 +943,6 @@ mmdc -i ARCHITECTURE.md -o output.svg -f svg
 
 | 版本 | 日期 | 描述 |
 |------|------|------|
-| 1.0.0 | 2024-12-10 | 初始版本，整合 Mermaid 图表 |
+| 1.0.0 | 2024-12-10 | 初始版本 (ASCII 图表) |
+| 1.0.1 | 2024-12-10 | 整合 Mermaid 图表，删除冗余文件 |
 
----
-
-*本文档使用 Mermaid.js 绘制，符合 IEC 61508 SIL 2 文档要求*

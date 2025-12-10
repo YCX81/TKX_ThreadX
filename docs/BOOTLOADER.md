@@ -1,8 +1,48 @@
 # Bootloader 设计文档
 
+**项目 / Project**: TKX_ThreadX
+**版本 / Version**: 1.0.1
+**模块**: Safety Bootloader
+
+---
+
 ## 概述
 
 安全启动引导程序 (Safety Bootloader) 负责在系统上电后执行必要的安全检测，验证应用程序完整性，并安全跳转到主应用程序。
+
+### Bootloader 架构
+
+```mermaid
+graph TB
+    subgraph Bootloader["Bootloader (48KB @ 0x08000000)"]
+        INIT[Boot_Init<br/>硬件初始化]
+        SELFTEST[Boot_SelfTest<br/>CPU/RAM/时钟自检]
+        VALIDATE[Boot_ValidateParams<br/>安全参数验证]
+        VERIFY[Boot_VerifyApp<br/>应用CRC校验]
+        JUMP[Boot_JumpToApp<br/>跳转到应用]
+    end
+
+    subgraph Config["Config 区 (16KB @ 0x0800C000)"]
+        BOOT_CFG[boot_config_t]
+        SAFETY_PARAMS[safety_params_t]
+    end
+
+    subgraph Application["Application (448KB @ 0x08010000)"]
+        APP[应用程序入口]
+    end
+
+    INIT --> SELFTEST
+    SELFTEST -->|Pass| VALIDATE
+    SELFTEST -->|Fail| SAFE[安全状态]
+    VALIDATE -->|Pass| VERIFY
+    VALIDATE -->|Fail| SAFE
+    VERIFY -->|Pass| JUMP
+    VERIFY -->|Fail| SAFE
+    JUMP --> APP
+
+    VALIDATE -.-> BOOT_CFG
+    VALIDATE -.-> SAFETY_PARAMS
+```
 
 ## 设计目标
 
@@ -21,6 +61,72 @@
 | Config 区域 | 0x0800C000 - 0x0800FFFF | 16KB | 配置参数 |
 
 ## 启动流程
+
+### Mermaid 版本
+
+```mermaid
+flowchart TB
+    RESET([System Reset]) --> INIT
+
+    subgraph INIT["1. BOOT_STATE_INIT"]
+        I1[HAL_Init]
+        I2[SystemClock_Config → 168MHz]
+        I3[Enable CRC peripheral]
+        I1 --> I2 --> I3
+    end
+
+    INIT --> SELFTEST
+
+    subgraph SELFTEST["2. BOOT_STATE_SELFTEST"]
+        S1[CPU Register Test]
+        S2[RAM March-C Test]
+        S3[Flash CRC Verification]
+        S4[Clock Frequency Check]
+    end
+
+    SELFTEST -->|Pass| VALIDATE
+    SELFTEST -->|Fail| SAFE
+
+    subgraph VALIDATE["3. BOOT_STATE_VALIDATE_PARAMS"]
+        V1[读取安全参数]
+        V2[Magic Number 验证]
+        V3[CRC32 验证]
+        V4[冗余字段验证]
+    end
+
+    VALIDATE -->|Pass| CONFIG
+    VALIDATE -->|Fail| SAFE
+
+    subgraph CONFIG["4. BOOT_STATE_CHECK_CONFIG"]
+        C1[读取启动配置]
+        C2{factory_mode?}
+    end
+
+    CONFIG -->|正常| VERIFY
+    C2 -->|工厂模式| FACTORY[工厂模式流程]
+
+    subgraph VERIFY["5. BOOT_STATE_VERIFY_APP"]
+        VE1[计算应用CRC]
+        VE2[与存储CRC比较]
+    end
+
+    VERIFY -->|Pass| JUMP
+    VERIFY -->|Fail| SAFE
+
+    subgraph JUMP["6. BOOT_STATE_JUMP_TO_APP"]
+        J1[验证程序流签名]
+        J2[设置MSP]
+        J3[跳转到应用入口]
+    end
+
+    JUMP --> APP([Application Running])
+    SAFE([Safe State])
+
+    style SAFE fill:#f66,stroke:#333
+    style APP fill:#6f6,stroke:#333
+```
+
+### ASCII 版本
 
 ```
 ┌────────────────────────────────────────────────────────────┐

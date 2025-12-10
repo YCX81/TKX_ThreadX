@@ -1,5 +1,11 @@
 # STM32F407 功能安全框架
 
+**项目 / Project**: TKX_ThreadX
+**版本 / Version**: 1.0.1
+**合规标准 / Compliance**: IEC 61508 SIL 2 / ISO 13849 PL d
+
+---
+
 基于 STM32F407VGT6 + Azure RTOS ThreadX 的功能安全框架实现。
 
 ## 概述

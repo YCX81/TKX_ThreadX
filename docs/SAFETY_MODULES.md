@@ -1,6 +1,57 @@
 # 安全模块文档
 
+**项目 / Project**: TKX_ThreadX
+**版本 / Version**: 1.0.1
+**模块**: Safety Framework
+
+---
+
 本文档描述功能安全框架中各安全模块的设计与 API。
+
+## 安全模块架构
+
+```mermaid
+graph TB
+    subgraph SafetyCore["safety_core 核心"]
+        CORE[Safety_Init<br/>Safety_GetState<br/>Safety_ReportError]
+    end
+
+    subgraph Monitoring["监控模块"]
+        MONITOR[safety_monitor<br/>周期监控线程]
+        WDG[safety_watchdog<br/>令牌看门狗]
+        STACK[safety_stack<br/>栈监控]
+        FLOW[safety_flow<br/>程序流]
+    end
+
+    subgraph Testing["测试模块"]
+        SELF[safety_selftest<br/>CPU/RAM/Flash/时钟]
+    end
+
+    subgraph Protection["保护模块"]
+        MPU[safety_mpu<br/>内存保护]
+        PARAMS[safety_params<br/>参数验证]
+    end
+
+    subgraph Config["配置"]
+        CFG[safety_config<br/>配置参数]
+    end
+
+    CORE --> MONITOR
+    CORE --> WDG
+    CORE --> SELF
+    CORE --> MPU
+    CORE --> PARAMS
+
+    MONITOR --> WDG
+    MONITOR --> STACK
+    MONITOR --> FLOW
+    MONITOR --> SELF
+
+    WDG --> CFG
+    SELF --> CFG
+    MPU --> CFG
+    PARAMS --> CFG
+```
 
 ## 模块概览
 
@@ -235,6 +286,24 @@ void App_MainThreadEntry(ULONG thread_input)
 
 ### 时序要求
 
+```mermaid
+gantt
+    title 看门狗时序 / Watchdog Timing
+    dateFormat X
+    axisFormat %Lms
+
+    section IWDG
+    IWDG 周期     :a1, 0, 1000
+
+    section 令牌
+    令牌有效期    :b1, 0, 800
+
+    section 喂狗
+    第一次喂狗    :milestone, m1, 0, 0
+    第二次喂狗    :milestone, m2, 500, 0
+```
+
+**ASCII 版本:**
 ```
 IWDG 超时: 1000ms
 令牌超时: 800ms

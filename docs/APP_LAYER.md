@@ -1,8 +1,48 @@
 # 应用层文档
 
+**项目 / Project**: TKX_ThreadX
+**版本 / Version**: 1.0.1
+**模块**: Application Layer
+
+---
+
 ## 概述
 
 应用层是功能安全框架的最上层，包含业务逻辑实现。应用层线程在安全框架的保护下运行。
+
+### 应用层架构
+
+```mermaid
+graph TB
+    subgraph Application["Application Layer"]
+        MAIN[App Main Thread<br/>Priority 5]
+        COMM[App Comm Thread<br/>Priority 10]
+    end
+
+    subgraph Safety["Safety Layer"]
+        MONITOR[Safety Monitor<br/>Priority 1]
+        WDG[Watchdog Module]
+        STACK[Stack Monitor]
+        FLOW[Flow Monitor]
+    end
+
+    subgraph RTOS["ThreadX RTOS"]
+        KERNEL[Kernel Scheduler]
+        POOL[Byte Pool]
+    end
+
+    MAIN -->|ReportToken| WDG
+    COMM -->|ReportToken| WDG
+    MONITOR -->|CheckAll| STACK
+    MONITOR -->|Verify| FLOW
+    MONITOR -->|Feed| WDG
+
+    KERNEL --> MAIN
+    KERNEL --> COMM
+    KERNEL --> MONITOR
+    POOL --> MAIN
+    POOL --> COMM
+```
 
 ## 文件结构
 
@@ -368,6 +408,45 @@ else
 ```
 
 ## 初始化时序
+
+### Mermaid 版本
+
+```mermaid
+sequenceDiagram
+    participant Main as main()
+    participant Safety as Safety Module
+    participant HAL as HAL/CubeMX
+    participant TX as ThreadX
+    participant App as App Threads
+
+    Main->>Safety: Safety_EarlyInit()
+    Main->>HAL: HAL_Init()
+    Main->>HAL: SystemClock_Config()
+    Main->>Safety: Safety_PostClockInit()
+    Main->>HAL: MX_xxx_Init()
+    Main->>Safety: Safety_StartupTest()
+    Main->>App: App_PreInit()
+    Note right of App: 参数服务初始化
+    Main->>Safety: Safety_PreKernelInit()
+    Main->>TX: MX_ThreadX_Init()
+
+    TX->>TX: tx_application_define()
+    TX->>Safety: Safety_Monitor_Init()
+    TX->>App: Create Main Thread
+    TX->>Safety: Stack_RegisterThread(Main)
+    TX->>App: Create Comm Thread
+    TX->>Safety: Stack_RegisterThread(Comm)
+
+    Note over TX,App: Kernel Running
+
+    par Concurrent Threads
+        Safety->>Safety: Safety_Monitor [P1]
+        App->>App: App_Main [P5]
+        App->>App: App_Comm [P10]
+    end
+```
+
+### ASCII 版本
 
 ```
 main()

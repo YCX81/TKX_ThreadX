@@ -1,8 +1,43 @@
 # 服务层文档
 
+**项目 / Project**: TKX_ThreadX
+**版本 / Version**: 1.0.1
+**模块**: Services Layer
+
+---
+
 ## 概述
 
 服务层位于安全层之上、应用层之下，提供对安全参数和系统配置的访问接口。
+
+### 服务层架构
+
+```mermaid
+graph TB
+    subgraph Application["应用层"]
+        APP[app_main]
+    end
+
+    subgraph Services["服务层"]
+        SVC_PARAMS[svc_params<br/>参数服务]
+        SVC_DIAG[svc_diag<br/>诊断服务]
+    end
+
+    subgraph Safety["安全层"]
+        SAFETY_PARAMS[safety_params]
+        SAFETY_CONFIG[safety_config]
+    end
+
+    subgraph Storage["存储"]
+        FLASH[Flash 参数区<br/>0x0800C000]
+    end
+
+    APP --> SVC_PARAMS
+    APP --> SVC_DIAG
+    SVC_PARAMS --> SAFETY_PARAMS
+    SVC_PARAMS --> FLASH
+    SAFETY_PARAMS --> SAFETY_CONFIG
+```
 
 ## 模块列表
 
@@ -195,6 +230,17 @@ static shared_status_t ValidateRedundancy(void)
 
 ### 使用流程
 
+```mermaid
+flowchart TB
+    START[App_PreInit] --> INIT[Svc_Params_Init]
+    INIT --> CHECK{返回值?}
+    CHECK -->|STATUS_OK| USE[正常使用参数]
+    CHECK -->|STATUS_ERROR_xxx| REPORT[Safety_ReportError]
+    REPORT --> DEGRADED[继续运行<br/>降级模式]
+    USE --> NORMAL[正常运行]
+```
+
+**ASCII 版本:**
 ```
 ┌─────────────────────────────────────────┐
 │          App_PreInit()                  │
