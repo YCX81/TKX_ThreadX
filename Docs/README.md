@@ -132,6 +132,7 @@ TKX_ThreadX/
 | [Coding Standard](EN/CODING_STANDARD.md) | C code coding standard | All Developers |
 | [CI/CD Workflow](EN/CI_CD_WORKFLOW.md) | Continuous integration and automated build | DevOps |
 | [Safety Checklist](EN/SAFETY_CHECKLIST.md) | Pre-release safety checklist | Testing, Release |
+| [FMEA](EN/FMEA.md) | System-level failure modes and effects analysis | Safety Engineers |
 | [Documentation Style Guide](EN/DOC_STYLE_GUIDE.md) | Documentation writing style guide | Documentation Writers |
 
 ## Functional Safety Standards

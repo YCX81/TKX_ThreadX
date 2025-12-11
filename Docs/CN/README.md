@@ -130,6 +130,7 @@ TKX_ThreadX/
 | [编码规范](CODING_STANDARD.md) | C 代码编码规范 | 所有开发者 |
 | [CI/CD 流程](CI_CD_WORKFLOW.md) | 持续集成与自动化构建 | DevOps |
 | [安全检查清单](SAFETY_CHECKLIST.md) | 发布前安全检查项 | 测试、发布 |
+| [FMEA 分析](FMEA.md) | 系统级失效模式与影响分析 | 安全工程师 |
 | [文档规范](DOC_STYLE_GUIDE.md) | 文档编写风格指南 | 文档编写者 |
 
 ## 功能安全标准
