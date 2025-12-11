@@ -241,17 +241,17 @@ jobs:
         shell: powershell
         run: |
           $summary = @"
-          # TKX_ThreadX 构建摘要 / Build Summary
+          # TKX_ThreadX Build Summary
 
-          | 项目 / Item | 结果 / Result |
-          |-------------|---------------|
-          | 版本 / Version | ${{ needs.version.outputs.version }} |
-          | 应用构建 / App Build | ${{ needs.build-app.result }} |
-          | Bootloader 构建 | ${{ needs.build-bootloader.result }} |
-          | C-STAT 分析 | ${{ needs.static-analysis.result }} |
+          | Item | Result |
+          |------|--------|
+          | Version | ${{ needs.version.outputs.version }} |
+          | App Build | ${{ needs.build-app.result }} |
+          | Bootloader Build | ${{ needs.build-bootloader.result }} |
+          | C-STAT Analysis | ${{ needs.static-analysis.result }} |
 
-          **构建时间 / Build Time**: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
-          **合规目标 / Compliance**: IEC 61508 SIL 2 / MISRA-C:2012
+          **Build Time**: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+          **Compliance**: IEC 61508 SIL 2 / MISRA-C:2012
           "@
 
-          echo $summary >> $env:GITHUB_STEP_SUMMARY
+          [System.IO.File]::WriteAllText($env:GITHUB_STEP_SUMMARY, $summary, [System.Text.Encoding]::UTF8)
