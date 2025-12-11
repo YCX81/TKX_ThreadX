@@ -1,8 +1,8 @@
 # 服务层文档
 
-**项目 / Project**: TKX_ThreadX
-**版本 / Version**: 1.0.1
-**模块**: Services Layer
+**项目**: TKX_ThreadX
+**版本**: 1.0.1
+**模块**: 服务层
 
 ---
 
@@ -238,24 +238,6 @@ flowchart TB
     CHECK -->|STATUS_ERROR_xxx| REPORT[Safety_ReportError]
     REPORT --> DEGRADED[继续运行<br/>降级模式]
     USE --> NORMAL[正常运行]
-```
-
-**ASCII 版本:**
-```
-┌─────────────────────────────────────────┐
-│          App_PreInit()                  │
-│              │                          │
-│              ▼                          │
-│       Svc_Params_Init()                 │
-│              │                          │
-│    ┌─────────┴─────────┐                │
-│    ▼                   ▼                │
-│ STATUS_OK         STATUS_ERROR_xxx      │
-│    │                   │                │
-│    ▼                   ▼                │
-│ 正常使用         Safety_ReportError()   │
-│ 参数             继续运行(降级)          │
-└─────────────────────────────────────────┘
 ```
 
 ### 与安全模块集成

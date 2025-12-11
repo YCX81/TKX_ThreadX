@@ -1,16 +1,16 @@
-# 应用层文档
+# Application Layer Documentation
 
-**项目 / Project**: TKX_ThreadX
-**版本 / Version**: 1.0.1
-**模块**: Application Layer
+**Project**: TKX_ThreadX
+**Version**: 1.0.1
+**Module**: Application Layer
 
 ---
 
-## 概述
+## Overview
 
-应用层是功能安全框架的最上层，包含业务逻辑实现。应用层线程在安全框架的保护下运行。
+The application layer is the top layer of the functional safety framework, containing business logic implementation. Application layer threads run under the protection of the safety framework.
 
-### 应用层架构
+### Application Layer Architecture
 
 ```mermaid
 graph TB
@@ -44,24 +44,24 @@ graph TB
     POOL --> COMM
 ```
 
-## 文件结构
+## File Structure
 
 ```
 App/
 ├── Inc/
-│   └── app_main.h      # 应用层接口
+│   └── app_main.h      # Application layer interface
 └── Src/
-    └── app_main.c      # 应用层实现
+    └── app_main.c      # Application layer implementation
 ```
 
-## 线程配置
+## Thread Configuration
 
-| 线程 | 栈大小 | 优先级 | 说明 |
-|------|--------|--------|------|
-| App Main | 4KB | 5 | 主业务逻辑 |
-| App Comm | 2KB | 10 | 通信处理 |
+| Thread | Stack Size | Priority | Description |
+|--------|-----------|----------|-------------|
+| App Main | 4KB | 5 | Main business logic |
+| App Comm | 2KB | 10 | Communication handling |
 
-### 配置定义
+### Configuration Definitions
 
 ```c
 #define APP_MAIN_THREAD_STACK_SIZE      4096U
@@ -73,7 +73,7 @@ App/
 #define APP_COMM_THREAD_PREEMPT_THRESH  10U
 ```
 
-## API 参考
+## API Reference
 
 ### App_PreInit
 
@@ -81,9 +81,9 @@ App/
 shared_status_t App_PreInit(void);
 ```
 
-ThreadX 启动前的初始化，主要初始化参数服务。
+Initialization before ThreadX startup, mainly initializes parameter service.
 
-**调用位置**: `main()` 中 `MX_ThreadX_Init()` 之前
+**Call Location**: Before `MX_ThreadX_Init()` in `main()`
 
 ### App_CreateThreads
 
@@ -91,21 +91,21 @@ ThreadX 启动前的初始化，主要初始化参数服务。
 UINT App_CreateThreads(TX_BYTE_POOL *byte_pool);
 ```
 
-创建应用层线程。
+Creates application layer threads.
 
-**参数**:
-- `byte_pool` - ThreadX 字节池，用于分配线程栈
+**Parameters**:
+- `byte_pool` - ThreadX byte pool for thread stack allocation
 
-**调用位置**: `tx_application_define()` 中
+**Call Location**: In `tx_application_define()`
 
-**执行流程**:
-1. 创建 Safety Monitor 线程
-2. 分配 Main 线程栈
-3. 创建 Main 线程
-4. 注册 Main 线程栈监控
-5. 分配 Comm 线程栈
-6. 创建 Comm 线程
-7. 注册 Comm 线程栈监控
+**Execution Flow**:
+1. Create Safety Monitor thread
+2. Allocate Main thread stack
+3. Create Main thread
+4. Register Main thread stack monitoring
+5. Allocate Comm thread stack
+6. Create Comm thread
+7. Register Comm thread stack monitoring
 
 ### App_MainThreadEntry
 
@@ -113,13 +113,13 @@ UINT App_CreateThreads(TX_BYTE_POOL *byte_pool);
 void App_MainThreadEntry(ULONG thread_input);
 ```
 
-主应用线程入口函数。
+Main application thread entry function.
 
-**执行内容**:
-- 等待安全系统就绪
-- 执行主业务逻辑
-- 报告看门狗令牌
-- 记录程序流检查点
+**Execution Content**:
+- Wait for safety system ready
+- Execute main business logic
+- Report watchdog token
+- Record program flow checkpoints
 
 ### App_CommThreadEntry
 
@@ -127,13 +127,13 @@ void App_MainThreadEntry(ULONG thread_input);
 void App_CommThreadEntry(ULONG thread_input);
 ```
 
-通信线程入口函数。
+Communication thread entry function.
 
-**执行内容**:
-- 等待安全系统就绪
-- 处理通信
-- 报告看门狗令牌
-- 记录程序流检查点
+**Execution Content**:
+- Wait for safety system ready
+- Handle communication
+- Report watchdog token
+- Record program flow checkpoints
 
 ### App_GetMainThread / App_GetCommThread
 
@@ -142,87 +142,87 @@ TX_THREAD* App_GetMainThread(void);
 TX_THREAD* App_GetCommThread(void);
 ```
 
-获取线程句柄。
+Get thread handles.
 
-## 应用线程模板
+## Application Thread Template
 
-### 主线程示例
+### Main Thread Example
 
 ```c
 void App_MainThreadEntry(ULONG thread_input)
 {
     (void)thread_input;
 
-    /* 等待安全系统就绪 */
+    /* Wait for safety system ready */
     while (!Safety_IsOperational())
     {
         tx_thread_sleep(10);
     }
 
-    /* 主循环 */
+    /* Main loop */
     while (1)
     {
-        /* 检查安全状态 */
+        /* Check safety state */
         safety_state_t state = Safety_GetState();
 
         if (state == SAFETY_STATE_NORMAL)
         {
             /* ======================================
-             * 正常操作 - 添加业务逻辑
+             * Normal Operation - Add Business Logic
              * ====================================== */
 
-            /* 示例: 读取传感器 */
+            /* Example: Read sensors */
             ReadSensors();
 
-            /* 示例: 处理数据 */
+            /* Example: Process data */
             ProcessData();
 
-            /* 示例: 控制输出 */
+            /* Example: Control outputs */
             UpdateOutputs();
 
-            /* 记录程序流检查点 */
+            /* Record program flow checkpoint */
             Safety_Flow_Checkpoint(PFM_CP_APP_MAIN_LOOP);
 
-            /* 报告看门狗令牌 */
+            /* Report watchdog token */
             Safety_Watchdog_ReportToken(WDG_TOKEN_MAIN_THREAD);
         }
         else if (state == SAFETY_STATE_DEGRADED)
         {
             /* ======================================
-             * 降级操作 - 功能受限
+             * Degraded Operation - Limited Functionality
              * ====================================== */
 
-            /* 示例: 只读取传感器，不控制输出 */
+            /* Example: Only read sensors, no control outputs */
             ReadSensors();
 
-            /* 仍需报告令牌 */
+            /* Still need to report token */
             Safety_Watchdog_ReportToken(WDG_TOKEN_MAIN_THREAD);
         }
         else
         {
-            /* 安全停止或错误状态 - 不执行操作 */
+            /* Safe stop or error state - No operation */
         }
 
-        /* 线程休眠 */
-        tx_thread_sleep(10);  /* 10ms 周期 */
+        /* Thread sleep */
+        tx_thread_sleep(10);  /* 10ms period */
     }
 }
 ```
 
-### 通信线程示例
+### Communication Thread Example
 
 ```c
 void App_CommThreadEntry(ULONG thread_input)
 {
     (void)thread_input;
 
-    /* 等待安全系统就绪 */
+    /* Wait for safety system ready */
     while (!Safety_IsOperational())
     {
         tx_thread_sleep(10);
     }
 
-    /* 通信循环 */
+    /* Communication loop */
     while (1)
     {
         safety_state_t state = Safety_GetState();
@@ -230,36 +230,36 @@ void App_CommThreadEntry(ULONG thread_input)
         if (state == SAFETY_STATE_NORMAL || state == SAFETY_STATE_DEGRADED)
         {
             /* ======================================
-             * 通信处理
+             * Communication Handling
              * ====================================== */
 
-            /* 示例: 检查 CAN 消息 */
+            /* Example: Check CAN messages */
             if (CAN_MessageAvailable())
             {
                 ProcessCANMessage();
             }
 
-            /* 示例: 发送状态 */
+            /* Example: Send status */
             SendStatusMessage();
 
-            /* 记录检查点 */
+            /* Record checkpoint */
             Safety_Flow_Checkpoint(PFM_CP_APP_COMM_HANDLER);
 
-            /* 报告令牌 */
+            /* Report token */
             Safety_Watchdog_ReportToken(WDG_TOKEN_COMM_THREAD);
         }
 
-        /* 事件驱动休眠 */
+        /* Event-driven sleep */
         tx_thread_sleep(100);
     }
 }
 ```
 
-## 添加新线程
+## Adding New Threads
 
-### 步骤
+### Steps
 
-1. **定义线程配置**
+1. **Define Thread Configuration**
 
 ```c
 /* app_main.h */
@@ -268,7 +268,7 @@ void App_CommThreadEntry(ULONG thread_input)
 #define APP_NEW_THREAD_PREEMPT_THRESH  8U
 ```
 
-2. **添加线程变量**
+2. **Add Thread Variables**
 
 ```c
 /* app_main.c */
@@ -276,10 +276,10 @@ static TX_THREAD s_new_thread;
 static UCHAR *s_new_stack = NULL;
 ```
 
-3. **创建线程**
+3. **Create Thread**
 
 ```c
-/* App_CreateThreads() 中 */
+/* In App_CreateThreads() */
 status = tx_byte_allocate(byte_pool,
                           (VOID **)&s_new_stack,
                           APP_NEW_THREAD_STACK_SIZE,
@@ -298,11 +298,11 @@ status = tx_thread_create(&s_new_thread,
                           TX_AUTO_START);
 if (status != TX_SUCCESS) return status;
 
-/* 注册栈监控 */
+/* Register stack monitoring */
 Safety_Stack_RegisterThread(&s_new_thread);
 ```
 
-4. **定义看门狗令牌** (如果需要)
+4. **Define Watchdog Token** (if needed)
 
 ```c
 /* safety_config.h */
@@ -313,7 +313,7 @@ Safety_Stack_RegisterThread(&s_new_thread);
                                  WDG_TOKEN_NEW_THREAD)
 ```
 
-5. **实现线程入口**
+5. **Implement Thread Entry**
 
 ```c
 void App_NewThreadEntry(ULONG thread_input)
@@ -329,10 +329,10 @@ void App_NewThreadEntry(ULONG thread_input)
     {
         if (Safety_GetState() == SAFETY_STATE_NORMAL)
         {
-            /* 业务逻辑 */
+            /* Business logic */
             DoWork();
 
-            /* 报告令牌 (如果注册了) */
+            /* Report token (if registered) */
             Safety_Watchdog_ReportToken(WDG_TOKEN_NEW_THREAD);
         }
 
@@ -341,44 +341,44 @@ void App_NewThreadEntry(ULONG thread_input)
 }
 ```
 
-## 与安全模块交互
+## Interacting with Safety Modules
 
-### 检查安全状态
+### Check Safety State
 
 ```c
-/* 获取当前状态 */
+/* Get current state */
 safety_state_t state = Safety_GetState();
 
 switch (state)
 {
     case SAFETY_STATE_NORMAL:
-        /* 正常运行 */
+        /* Normal operation */
         break;
 
     case SAFETY_STATE_DEGRADED:
-        /* 降级运行 */
+        /* Degraded operation */
         break;
 
     case SAFETY_STATE_SAFE:
     case SAFETY_STATE_ERROR:
-        /* 停止操作 */
+        /* Stop operation */
         break;
 
     default:
         break;
 }
 
-/* 检查是否可运行 */
+/* Check if operational */
 if (Safety_IsOperational())
 {
-    /* 可以执行操作 */
+    /* Can execute operations */
 }
 ```
 
-### 报告错误
+### Report Errors
 
 ```c
-/* 检测到异常时报告 */
+/* Report when anomaly detected */
 if (sensor_value > MAX_SAFE_VALUE)
 {
     Safety_ReportError(SAFETY_ERR_INTERNAL,
@@ -387,29 +387,29 @@ if (sensor_value > MAX_SAFE_VALUE)
 }
 ```
 
-### 使用参数服务
+### Using Parameter Service
 
 ```c
-/* 检查参数有效性 */
+/* Check parameter validity */
 if (Svc_Params_IsValid())
 {
-    /* 获取校准参数 */
+    /* Get calibration parameters */
     float gain = Svc_Params_GetHallGain(0);
     float offset = Svc_Params_GetHallOffset(0);
 
-    /* 应用校准 */
+    /* Apply calibration */
     calibrated = (raw - offset) * gain;
 }
 else
 {
-    /* 使用默认值或拒绝处理 */
+    /* Use default value or reject processing */
     calibrated = raw;
 }
 ```
 
-## 初始化时序
+## Initialization Sequence
 
-### Mermaid 版本
+### Mermaid Version
 
 ```mermaid
 sequenceDiagram
@@ -426,7 +426,7 @@ sequenceDiagram
     Main->>HAL: MX_xxx_Init()
     Main->>Safety: Safety_StartupTest()
     Main->>App: App_PreInit()
-    Note right of App: 参数服务初始化
+    Note right of App: Parameter service initialization
     Main->>Safety: Safety_PreKernelInit()
     Main->>TX: MX_ThreadX_Init()
 
@@ -446,38 +446,11 @@ sequenceDiagram
     end
 ```
 
-### ASCII 版本
+## Important Notes
 
-```
-main()
-├── Safety_EarlyInit()
-├── HAL_Init()
-├── SystemClock_Config()
-├── Safety_PostClockInit()
-├── MX_xxx_Init()
-├── Safety_StartupTest()
-├── App_PreInit()              ← 参数服务初始化
-├── Safety_PreKernelInit()
-└── MX_ThreadX_Init()
-    └── tx_application_define()
-        └── App_CreateThreads()
-            ├── Safety_Monitor_Init()  ← 安全监控线程
-            ├── Create Main Thread
-            ├── Stack_RegisterThread(Main)
-            ├── Create Comm Thread
-            └── Stack_RegisterThread(Comm)
+### 1. Wait for Safety System Ready
 
-ThreadX Kernel Running
-├── Safety_Monitor_ThreadEntry()  [Priority 1]
-├── App_MainThreadEntry()         [Priority 5]
-└── App_CommThreadEntry()         [Priority 10]
-```
-
-## 注意事项
-
-### 1. 等待安全系统就绪
-
-所有应用线程必须在开始业务逻辑前等待安全系统就绪：
+All application threads must wait for safety system ready before starting business logic:
 
 ```c
 while (!Safety_IsOperational())
@@ -486,70 +459,70 @@ while (!Safety_IsOperational())
 }
 ```
 
-### 2. 看门狗令牌报告
+### 2. Watchdog Token Reporting
 
-如果线程注册了看门狗令牌，必须周期性报告：
+If a thread is registered with a watchdog token, it must report periodically:
 
-- 令牌超时: 800ms
-- 建议报告周期: 每次主循环
+- Token timeout: 800ms
+- Recommended reporting period: Every main loop iteration
 
-### 3. 程序流检查点
+### 3. Program Flow Checkpoints
 
-在关键执行点记录检查点：
+Record checkpoints at critical execution points:
 
 ```c
 Safety_Flow_Checkpoint(PFM_CP_APP_MAIN_LOOP);
 ```
 
-### 4. 降级模式行为
+### 4. Degraded Mode Behavior
 
-降级模式下应限制功能：
-- 停止控制输出
-- 继续监控/通信
-- 仍需报告看门狗令牌
+In degraded mode, functionality should be limited:
+- Stop control outputs
+- Continue monitoring/communication
+- Still need to report watchdog tokens
 
-### 5. 栈大小
+### 5. Stack Size
 
-根据线程功能分配合适的栈：
-- 简单任务: 1-2KB
-- 复杂计算: 4KB+
-- 使用栈监控验证
+Allocate appropriate stack based on thread functionality:
+- Simple tasks: 1-2KB
+- Complex calculations: 4KB+
+- Verify using stack monitoring
 
-### 6. 优先级设计
+### 6. Priority Design
 
-| 优先级 | 线程类型 |
-|--------|----------|
-| 1 | 安全监控 (最高) |
-| 2-4 | 实时控制 |
-| 5-7 | 主业务 |
-| 8-15 | 通信/UI |
-| 16+ | 后台任务 |
+| Priority | Thread Type |
+|----------|-------------|
+| 1 | Safety Monitor (Highest) |
+| 2-4 | Real-time Control |
+| 5-7 | Main Business |
+| 8-15 | Communication/UI |
+| 16+ | Background Tasks |
 
-## 调试技巧
+## Debugging Tips
 
-### 1. 查看线程状态
+### 1. View Thread Status
 
 ```c
-/* 通过 IAR 调试器查看 ThreadX 变量 */
-/* _tx_thread_created_ptr - 线程链表 */
-/* _tx_thread_current_ptr - 当前线程 */
+/* View ThreadX variables through IAR debugger */
+/* _tx_thread_created_ptr - Thread linked list */
+/* _tx_thread_current_ptr - Current thread */
 ```
 
-### 2. 栈使用分析
+### 2. Stack Usage Analysis
 
 ```c
 stack_info_t info;
 Safety_Stack_GetInfo(&s_main_thread, &info);
 
-/* 检查 usage_percent, warning, critical */
+/* Check usage_percent, warning, critical */
 ```
 
-### 3. 安全状态诊断
+### 3. Safety State Diagnostics
 
 ```c
 const safety_context_t *ctx = Safety_GetContext();
 
-/* 查看:
+/* View:
  * - ctx->state
  * - ctx->last_error
  * - ctx->error_count

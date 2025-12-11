@@ -4,7 +4,7 @@
 # TKX_ThreadX 功能安全项目 / Functional Safety Project
 #==============================================================================
 # 安装 / Installation:
-#   cp ci/hooks/pre-commit .git/hooks/
+#   cp CI/hooks/pre-commit .git/hooks/
 #   chmod +x .git/hooks/pre-commit
 #==============================================================================
 

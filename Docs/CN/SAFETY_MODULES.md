@@ -1,8 +1,8 @@
 # 安全模块文档
 
-**项目 / Project**: TKX_ThreadX
-**版本 / Version**: 1.0.1
-**模块**: Safety Framework
+**项目**: TKX_ThreadX
+**版本**: 1.0.1
+**模块**: 安全框架
 
 ---
 
@@ -68,7 +68,7 @@ graph TB
 
 ---
 
-## 1. Safety Core (安全核心)
+## 1. Safety Core（安全核心）
 
 ### 概述
 
@@ -177,7 +177,7 @@ int main(void)
 
 ---
 
-## 2. Safety Monitor (安全监控线程)
+## 2. Safety Monitor（安全监控线程）
 
 ### 概述
 
@@ -235,7 +235,7 @@ void Safety_Monitor_ThreadEntry(ULONG thread_input)
 
 ---
 
-## 3. Safety Watchdog (看门狗管理)
+## 3. Safety Watchdog（看门狗管理）
 
 ### 概述
 
@@ -288,7 +288,7 @@ void App_MainThreadEntry(ULONG thread_input)
 
 ```mermaid
 gantt
-    title 看门狗时序 / Watchdog Timing
+    title 看门狗时序
     dateFormat X
     axisFormat %Lms
 
@@ -319,7 +319,7 @@ IWDG 超时: 1000ms
 
 ---
 
-## 4. Safety SelfTest (自检模块)
+## 4. Safety SelfTest（自检模块）
 
 ### 概述
 
@@ -368,7 +368,7 @@ typedef enum {
 
 ---
 
-## 5. Safety Stack (栈监控)
+## 5. Safety Stack（栈监控）
 
 ### 概述
 
@@ -422,7 +422,7 @@ typedef struct {
 
 ---
 
-## 6. Safety Flow (程序流监控)
+## 6. Safety Flow（程序流监控）
 
 ### 概述
 
@@ -475,7 +475,7 @@ void App_MainLoop(void)
 
 ---
 
-## 7. Safety MPU (内存保护)
+## 7. Safety MPU（内存保护）
 
 ### 概述
 
@@ -486,14 +486,14 @@ void App_MainLoop(void)
 
 ### 区域配置
 
-| Region | 地址 | 大小 | 权限 | 用途 |
+| 区域 | 地址 | 大小 | 权限 | 用途 |
 |--------|------|------|------|------|
-| 0 | 0x08010000 | 512KB | RO+X | App Flash |
-| 1 | 0x20000000 | 128KB | RW | Main RAM |
+| 0 | 0x08010000 | 512KB | RO+X | 应用 Flash |
+| 1 | 0x20000000 | 128KB | RW | 主 RAM |
 | 2 | 0x10000000 | 64KB | RW | CCM RAM |
-| 3 | 0x40000000 | 512MB | RW+Device | Peripherals |
-| 4 | 0x0800C000 | 16KB | RO | Config Flash |
-| 5 | 0x08000000 | 64KB | No Access | Bootloader |
+| 3 | 0x40000000 | 512MB | RW+Device | 外设 |
+| 4 | 0x0800C000 | 16KB | RO | 配置 Flash |
+| 5 | 0x08000000 | 64KB | 无访问权限 | Bootloader |
 
 ### API
 
@@ -573,7 +573,7 @@ typedef struct {
 
 ---
 
-## 8. Safety Params (参数验证)
+## 8. Safety Params（参数验证）
 
 ### 概述
 
@@ -634,7 +634,7 @@ typedef enum {
 
 ---
 
-## 9. 双看门狗 (IWDG + WWDG)
+## 9. 双看门狗（IWDG + WWDG）
 
 ### 概述
 
@@ -654,7 +654,7 @@ typedef enum {
 #define WWDG_COUNTER            0x7FU   /* 计数器值 */
 ```
 
-### API (WWDG 扩展)
+### API（WWDG 扩展）
 
 | 函数 | 说明 |
 |------|------|
@@ -666,14 +666,14 @@ typedef enum {
 
 | 特性 | IWDG | WWDG |
 |------|------|------|
-| 时钟源 | LSI (独立) | PCLK1 (系统) |
+| 时钟源 | LSI（独立） | PCLK1（系统） |
 | 复位条件 | 超时 | 超时或过早喂狗 |
 | 检测能力 | 卡死检测 | 时序异常检测 |
 | 精度 | 低 | 高 |
 
 ---
 
-## 10. 诊断输出 (RTT/SystemView)
+## 10. 诊断输出（RTT/SystemView）
 
 ### Segger RTT 诊断
 
@@ -719,7 +719,7 @@ BSP_SysView_RecordValue(1, temperature);
 /**
  ******************************************************************************
  * @file    safety_xxx.h
- * @brief   Module Description
+ * @brief   模块描述
  * @author  YCX81
  * @version V1.0.0
  ******************************************************************************
@@ -727,7 +727,7 @@ BSP_SysView_RecordValue(1, temperature);
 
 /* 章节分隔符 */
 /* ============================================================================
- * Section Name
+ * 章节名称
  * ============================================================================*/
 
 /* 静态变量前缀 */
@@ -758,4 +758,4 @@ safety_status_t Safety_Module_Function(void);
 - [ ] 正式 FMEA 文档
 - [ ] 故障注入测试用例
 - [ ] 代码覆盖率分析
-- [ ] 汇编级 CPU 测试 (可选)
+- [ ] 汇编级 CPU 测试（可选）

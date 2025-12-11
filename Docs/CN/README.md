@@ -1,8 +1,8 @@
 # STM32F407 功能安全框架
 
-**项目 / Project**: TKX_ThreadX
-**版本 / Version**: 1.0.1
-**合规标准 / Compliance**: IEC 61508 SIL 2 / ISO 13849 PL d
+**项目**: TKX_ThreadX
+**版本**: 1.0.1
+**合规标准**: IEC 61508 SIL 2 / ISO 13849 PL d
 
 ---
 
@@ -10,7 +10,7 @@
 
 ## 概述
 
-本项目实现了符合 IEC 61508 SIL 2 / ISO 13849 PL d 要求的功能安全框架，包含：
+本项目实现了符合 IEC 61508 SIL 2 / ISO 13849 PL d 要求的功能安全框架,包含:
 
 - **安全启动引导程序 (Bootloader)**: 启动自检、参数验证、应用程序完整性校验
 - **运行时安全监控**: 多线程看门狗、栈监控、程序流监控
@@ -21,19 +21,19 @@
 
 | 项目 | 规格 |
 |------|------|
-| MCU | STM32F407VGT6 (Cortex-M4, 168MHz) |
-| Flash | 1MB (内部) |
-| RAM | 192KB (128KB SRAM + 64KB CCM) |
-| 外设 | CAN, UART, SPI, I2C, ADC |
+| 微控制器 | STM32F407VGT6 (Cortex-M4, 168MHz) |
+| Flash 存储 | 1MB (内部) |
+| RAM 内存 | 192KB (128KB SRAM + 64KB CCM) |
+| 外设接口 | CAN, UART, SPI, I2C, ADC |
 
 ## 软件环境
 
 | 项目 | 版本 |
 |------|------|
-| IDE | IAR EWARM V8.50+ |
-| RTOS | Azure RTOS ThreadX 6.1.10 |
-| HAL | STM32Cube HAL |
-| 代码生成 | STM32CubeMX |
+| 集成开发环境 | IAR EWARM V8.50+ |
+| 实时操作系统 | Azure RTOS ThreadX 6.1.10 |
+| 硬件抽象层 | STM32Cube HAL |
+| 代码生成工具 | STM32CubeMX |
 
 ## 目录结构
 
@@ -59,18 +59,19 @@ TKX_ThreadX/
 │   └── Src/               # 服务层实现
 ├── Shared/                # Bootloader/App 共享配置
 │   └── Inc/               # 共享头文件
-└── docs/                  # 文档
+├── Docs/                  # 文档
+└── CI/                    # CI/CD 脚本
 ```
 
 ## 内存布局
 
 | 区域 | 起始地址 | 大小 | 用途 |
 |------|----------|------|------|
-| Bootloader | 0x08000000 | 48KB | 安全引导程序 |
-| Config | 0x0800C000 | 16KB | 配置/校准参数 |
-| Application | 0x08010000 | 448KB | 主应用程序 |
-| SRAM | 0x20000000 | 128KB | 运行时数据 |
-| CCM RAM | 0x10000000 | 64KB | 线程栈/关键数据 |
+| Bootloader 引导程序 | 0x08000000 | 48KB | 安全引导程序 |
+| Config 配置区 | 0x0800C000 | 16KB | 配置/校准参数 |
+| Application 应用程序 | 0x08010000 | 448KB | 主应用程序 |
+| SRAM 静态内存 | 0x20000000 | 128KB | 运行时数据 |
+| CCM RAM 紧耦合内存 | 0x10000000 | 64KB | 线程栈/关键数据 |
 
 ## 安全机制
 
@@ -96,7 +97,7 @@ TKX_ThreadX/
 ### 1. 环境准备
 
 1. 安装 IAR EWARM V8.50+
-2. 安装 STM32CubeMX (可选，用于重新生成代码)
+2. 安装 STM32CubeMX (可选,用于重新生成代码)
 3. 克隆本仓库
 
 ### 2. 编译 Bootloader
@@ -115,24 +116,30 @@ TKX_ThreadX/
 
 1. 首先烧录 Bootloader (地址 0x08000000)
 2. 然后烧录应用程序 (地址 0x08010000)
-3. 可选：烧录校准参数 (地址 0x0800C000)
+3. 可选:烧录校准参数 (地址 0x0800C000)
 
-## 相关文档
+## 文档导航
 
-- [架构设计](ARCHITECTURE.md) - 整体架构与设计决策
-- [Bootloader 设计](BOOTLOADER.md) - 安全引导程序详解
-- [安全模块](SAFETY_MODULES.md) - 安全模块 API 参考
-- [服务层](SERVICES.md) - 参数服务等
-- [应用层](APP_LAYER.md) - 应用开发指南
+| 文档 | 说明 | 适用对象 |
+|------|------|----------|
+| [架构设计](ARCHITECTURE.md) | 系统架构、内存布局、状态机 | 架构师、开发者 |
+| [Bootloader 引导程序](BOOTLOADER.md) | 安全引导程序设计与实现 | 底层开发者 |
+| [安全模块](SAFETY_MODULES.md) | 安全模块 API 与使用指南 | 安全开发者 |
+| [服务层](SERVICES.md) | 参数服务、诊断服务 | 应用开发者 |
+| [应用层](APP_LAYER.md) | 应用线程开发指南 | 应用开发者 |
+| [编码规范](CODING_STANDARD.md) | C 代码编码规范 | 所有开发者 |
+| [CI/CD 流程](CI_CD_WORKFLOW.md) | 持续集成与自动化构建 | DevOps |
+| [安全检查清单](SAFETY_CHECKLIST.md) | 发布前安全检查项 | 测试、发布 |
+| [文档规范](DOC_STYLE_GUIDE.md) | 文档编写风格指南 | 文档编写者 |
 
 ## 功能安全标准
 
-本框架设计符合以下标准要求：
+本框架设计符合以下标准要求:
 
 - **IEC 61508**: 安全完整性等级 SIL 2
 - **ISO 13849**: 性能等级 PL d
 
-诊断覆盖率目标：
+诊断覆盖率目标:
 - 启动自检: DC > 99%
 - 运行时监控: DC > 90%
 

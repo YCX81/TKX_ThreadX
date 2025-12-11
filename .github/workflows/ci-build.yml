@@ -10,7 +10,7 @@ on:
   push:
     branches: [main, develop, 'feature/**', 'release/**', 'hotfix/**']
     paths-ignore:
-      - 'docs/**'
+      - 'Docs/**'
       - '*.md'
       - '.gitignore'
   pull_request:
@@ -68,7 +68,7 @@ jobs:
           echo "build_number=$buildNumber" >> $env:GITHUB_OUTPUT
 
           # 生成版本头文件 / Generate version header
-          .\ci\scripts\generate_version.ps1
+          .\CI\scripts\generate_version.ps1
 
       - name: Upload Version Header
         uses: actions/upload-artifact@v4
@@ -98,7 +98,7 @@ jobs:
       - name: Build TKX_ThreadX
         shell: powershell
         run: |
-          .\ci\scripts\build.ps1 `
+          .\CI\scripts\build.ps1 `
             -Configuration "TKX_ThreadX" `
             -IARPath "${{ env.IAR_PATH }}" `
             -Rebuild `
@@ -146,7 +146,7 @@ jobs:
       - name: Build Bootloader
         shell: powershell
         run: |
-          .\ci\scripts\build_bootloader.ps1 `
+          .\CI\scripts\build_bootloader.ps1 `
             -IARPath "${{ env.IAR_PATH }}" `
             -Rebuild
 
@@ -188,7 +188,7 @@ jobs:
       - name: Run C-STAT
         shell: powershell
         run: |
-          .\ci\scripts\cstat_analyze.ps1 `
+          .\CI\scripts\cstat_analyze.ps1 `
             -Configuration "TKX_ThreadX" `
             -IARPath "${{ env.IAR_PATH }}"
 

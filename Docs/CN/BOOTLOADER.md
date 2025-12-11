@@ -1,8 +1,8 @@
 # Bootloader 设计文档
 
-**项目 / Project**: TKX_ThreadX
-**版本 / Version**: 1.0.1
-**模块**: Safety Bootloader
+**项目**: TKX_ThreadX
+**版本**: 1.0.1
+**模块**: 安全启动引导程序
 
 ---
 
@@ -14,7 +14,7 @@
 
 ```mermaid
 graph TB
-    subgraph Bootloader["Bootloader (48KB @ 0x08000000)"]
+    subgraph Bootloader["引导程序 (48KB @ 0x08000000)"]
         INIT[Boot_Init<br/>硬件初始化]
         SELFTEST[Boot_SelfTest<br/>CPU/RAM/时钟自检]
         VALIDATE[Boot_ValidateParams<br/>安全参数验证]
@@ -22,22 +22,22 @@ graph TB
         JUMP[Boot_JumpToApp<br/>跳转到应用]
     end
 
-    subgraph Config["Config 区 (16KB @ 0x0800C000)"]
+    subgraph Config["配置区 (16KB @ 0x0800C000)"]
         BOOT_CFG[boot_config_t]
         SAFETY_PARAMS[safety_params_t]
     end
 
-    subgraph Application["Application (448KB @ 0x08010000)"]
+    subgraph Application["应用程序 (448KB @ 0x08010000)"]
         APP[应用程序入口]
     end
 
     INIT --> SELFTEST
-    SELFTEST -->|Pass| VALIDATE
-    SELFTEST -->|Fail| SAFE[安全状态]
-    VALIDATE -->|Pass| VERIFY
-    VALIDATE -->|Fail| SAFE
-    VERIFY -->|Pass| JUMP
-    VERIFY -->|Fail| SAFE
+    SELFTEST -->|通过| VALIDATE
+    SELFTEST -->|失败| SAFE[安全状态]
+    VALIDATE -->|通过| VERIFY
+    VALIDATE -->|失败| SAFE
+    VERIFY -->|通过| JUMP
+    VERIFY -->|失败| SAFE
     JUMP --> APP
 
     VALIDATE -.-> BOOT_CFG
@@ -66,40 +66,40 @@ graph TB
 
 ```mermaid
 flowchart TB
-    RESET([System Reset]) --> INIT
+    RESET([系统复位]) --> INIT
 
     subgraph INIT["1. BOOT_STATE_INIT"]
         I1[HAL_Init]
         I2[SystemClock_Config → 168MHz]
-        I3[Enable CRC peripheral]
+        I3[使能 CRC 外设]
         I1 --> I2 --> I3
     end
 
     INIT --> SELFTEST
 
     subgraph SELFTEST["2. BOOT_STATE_SELFTEST"]
-        S1[CPU Register Test]
-        S2[RAM March-C Test]
-        S3[Flash CRC Verification]
-        S4[Clock Frequency Check]
+        S1[CPU 寄存器测试]
+        S2[RAM March-C 测试]
+        S3[Flash CRC 校验]
+        S4[时钟频率检查]
     end
 
-    SELFTEST -->|Pass| VALIDATE
-    SELFTEST -->|Fail| SAFE
+    SELFTEST -->|通过| VALIDATE
+    SELFTEST -->|失败| SAFE
 
     subgraph VALIDATE["3. BOOT_STATE_VALIDATE_PARAMS"]
         V1[读取安全参数]
-        V2[Magic Number 验证]
+        V2[魔数验证]
         V3[CRC32 验证]
         V4[冗余字段验证]
     end
 
-    VALIDATE -->|Pass| CONFIG
-    VALIDATE -->|Fail| SAFE
+    VALIDATE -->|通过| CONFIG
+    VALIDATE -->|失败| SAFE
 
     subgraph CONFIG["4. BOOT_STATE_CHECK_CONFIG"]
         C1[读取启动配置]
-        C2{factory_mode?}
+        C2{工厂模式?}
     end
 
     CONFIG -->|正常| VERIFY
@@ -110,8 +110,8 @@ flowchart TB
         VE2[与存储CRC比较]
     end
 
-    VERIFY -->|Pass| JUMP
-    VERIFY -->|Fail| SAFE
+    VERIFY -->|通过| JUMP
+    VERIFY -->|失败| SAFE
 
     subgraph JUMP["6. BOOT_STATE_JUMP_TO_APP"]
         J1[验证程序流签名]
@@ -119,68 +119,11 @@ flowchart TB
         J3[跳转到应用入口]
     end
 
-    JUMP --> APP([Application Running])
-    SAFE([Safe State])
+    JUMP --> APP([应用程序运行])
+    SAFE([安全状态])
 
     style SAFE fill:#f66,stroke:#333
     style APP fill:#6f6,stroke:#333
-```
-
-### ASCII 版本
-
-```
-┌────────────────────────────────────────────────────────────┐
-│                       System Reset                          │
-└────────────────────────────┬───────────────────────────────┘
-                             │
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│ 1. BOOT_STATE_INIT                                         │
-│    - HAL_Init()                                            │
-│    - SystemClock_Config() → 168MHz from HSE               │
-│    - Enable CRC peripheral                                 │
-└────────────────────────────┬───────────────────────────────┘
-                             │
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│ 2. BOOT_STATE_SELFTEST                                     │
-│    - CPU Register Test                                     │
-│    - RAM March-C Test                                      │
-│    - Flash CRC Verification                                │
-│    - Clock Frequency Check                                 │
-└────────────────────────────┬───────────────────────────────┘
-                             │ 失败 → Safe State
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│ 3. BOOT_STATE_VALIDATE_PARAMS                              │
-│    - 读取安全参数 (SAFETY_PARAMS_ADDR)                      │
-│    - Magic Number 验证                                      │
-│    - CRC32 验证                                             │
-│    - 冗余字段验证                                            │
-└────────────────────────────┬───────────────────────────────┘
-                             │ 失败 → Safe State
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│ 4. BOOT_STATE_CHECK_CONFIG                                 │
-│    - 读取启动配置                                           │
-│    - 检查 factory_mode 标志                                 │
-│    - 若为工厂模式 → 进入工厂模式流程                          │
-└────────────────────────────┬───────────────────────────────┘
-                             │
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│ 5. BOOT_STATE_VERIFY_APP                                   │
-│    - 计算应用程序 CRC (0x08010000 - 0x0807FFFB)            │
-│    - 与存储的 CRC 比较 (0x0807FFFC)                         │
-└────────────────────────────┬───────────────────────────────┘
-                             │ 失败 → Safe State
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│ 6. BOOT_STATE_JUMP_TO_APP                                  │
-│    - 验证程序流签名                                         │
-│    - 设置 MSP (Main Stack Pointer)                         │
-│    - 跳转到应用程序入口                                      │
-└────────────────────────────────────────────────────────────┘
 ```
 
 ## 状态定义
@@ -204,8 +147,8 @@ typedef enum {
 
 测试内容：
 - R0-R12 通用寄存器
-- LR (Link Register)
-- APSR (Application Program Status Register)
+- LR (链接寄存器)
+- APSR (应用程序状态寄存器)
 
 测试方法：
 - 写入测试模式 (0xAAAAAAAA, 0x55555555)

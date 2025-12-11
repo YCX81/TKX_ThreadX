@@ -1,65 +1,65 @@
-# CI/CD 工作流指南 / CI/CD Workflow Guide
+# CI/CD 工作流指南
 
-**项目 / Project**: TKX_ThreadX
-**合规标准 / Compliance**: IEC 61508 SIL 2 / ISO 13849 PL d / MISRA-C:2012
-**版本 / Version**: 1.0.0
-
----
-
-## 目录 / Table of Contents
-
-1. [概述 / Overview](#1-概述--overview)
-2. [工具链架构 / Toolchain Architecture](#2-工具链架构--toolchain-architecture)
-3. [本地开发流程 / Local Development](#3-本地开发流程--local-development)
-4. [CI/CD 流水线 / CI/CD Pipeline](#4-cicd-流水线--cicd-pipeline)
-5. [构建脚本使用 / Build Scripts Usage](#5-构建脚本使用--build-scripts-usage)
-6. [静态分析 / Static Analysis](#6-静态分析--static-analysis)
-7. [运行时分析 / Runtime Analysis](#7-运行时分析--runtime-analysis)
-8. [版本管理 / Version Management](#8-版本管理--version-management)
-9. [发布流程 / Release Process](#9-发布流程--release-process)
+**项目**: TKX_ThreadX
+**合规标准**: IEC 61508 SIL 2 / ISO 13849 PL d / MISRA-C:2012
+**版本**: 1.0.0
 
 ---
 
-## 1. 概述 / Overview
+## 目录
 
-### 1.1 工作流架构图 / Workflow Architecture
+1. [概述](#1-概述)
+2. [工具链架构](#2-工具链架构)
+3. [本地开发流程](#3-本地开发流程)
+4. [CI/CD 流水线](#4-cicd-流水线)
+5. [构建脚本使用](#5-构建脚本使用)
+6. [静态分析](#6-静态分析)
+7. [运行时分析](#7-运行时分析)
+8. [版本管理](#8-版本管理)
+9. [发布流程](#9-发布流程)
+
+---
+
+## 1. 概述
+
+### 1.1 工作流架构图
 
 ```mermaid
 flowchart TB
-    subgraph Developer["开发者本地 / Local Development"]
-        CODE[编写代码<br/>Write Code] --> COMPILE[IAR 编译<br/>IAR Compile]
-        COMPILE --> CRUN[C-RUN 调试<br/>Runtime Debug]
+    subgraph Developer["开发者本地"]
+        CODE[编写代码] --> COMPILE[IAR 编译]
+        COMPILE --> CRUN[C-RUN 调试]
         CRUN --> COMMIT[Git Commit]
         COMMIT --> HOOK[Pre-commit Hook]
         HOOK --> PUSH[Git Push]
     end
 
     subgraph CI["GitHub Actions (Self-hosted Runner)"]
-        PUSH --> VERSION[生成版本信息<br/>Generate Version]
-        VERSION --> BUILD_APP[构建应用<br/>Build App]
-        VERSION --> BUILD_BOOT[构建 Bootloader<br/>Build Bootloader]
-        BUILD_APP --> CSTAT[C-STAT 分析<br/>Static Analysis]
+        PUSH --> VERSION[生成版本信息]
+        VERSION --> BUILD_APP[构建应用]
+        VERSION --> BUILD_BOOT[构建 Bootloader]
+        BUILD_APP --> CSTAT[C-STAT 分析]
         BUILD_BOOT --> CSTAT
-        CSTAT --> ARTIFACTS[上传产物<br/>Upload Artifacts]
+        CSTAT --> ARTIFACTS[上传产物]
     end
 
-    subgraph Review["代码审查 / Code Review"]
+    subgraph Review["代码审查"]
         ARTIFACTS --> PR[Pull Request]
-        PR --> CHECKLIST[安全检查清单<br/>Safety Checklist]
-        CHECKLIST --> APPROVE[审批合并<br/>Approve & Merge]
+        PR --> CHECKLIST[安全检查清单]
+        CHECKLIST --> APPROVE[审批合并]
     end
 
-    subgraph Release["发布 / Release"]
+    subgraph Release["发布"]
         APPROVE --> TAG[Git Tag]
         TAG --> RELEASE[GitHub Release]
-        RELEASE --> FIRMWARE[固件包<br/>Firmware Package]
+        RELEASE --> FIRMWARE[固件包]
     end
 ```
 
-### 1.2 工具链总览 / Toolchain Overview
+### 1.2 工具链总览
 
-| 工具 / Tool | 用途 / Purpose | 执行时机 / When |
-|-------------|----------------|-----------------|
+| 工具 | 用途 | 执行时机 |
+|------|------|----------|
 | **IAR EWARM** | 编译构建 | 本地 + CI |
 | **C-STAT** | MISRA-C 静态分析 | CI 自动 |
 | **C-RUN** | 运行时错误检测 | 本地调试 |
@@ -68,9 +68,9 @@ flowchart TB
 
 ---
 
-## 2. 工具链架构 / Toolchain Architecture
+## 2. 工具链架构
 
-### 2.1 目录结构 / Directory Structure
+### 2.1 目录结构
 
 ```
 TKX_ThreadX/
@@ -78,7 +78,7 @@ TKX_ThreadX/
 │   ├── workflows/
 │   │   └── ci-build.yml          # CI 工作流配置
 │   └── PULL_REQUEST_TEMPLATE.md  # PR 安全检查清单
-├── ci/
+├── CI/
 │   ├── scripts/
 │   │   ├── build.ps1             # 主构建脚本
 │   │   ├── build_bootloader.ps1  # Bootloader 构建
@@ -87,7 +87,7 @@ TKX_ThreadX/
 │   │   └── generate_version.ps1  # 版本信息生成
 │   └── hooks/
 │       └── pre-commit            # Git pre-commit hook
-├── docs/
+├── Docs/
 │   ├── CODING_STANDARD.md        # 编码规范
 │   ├── SAFETY_CHECKLIST.md       # 安全检查清单
 │   └── CI_CD_WORKFLOW.md         # 本文档
@@ -101,7 +101,7 @@ TKX_ThreadX/
         └── cstat_summary.json
 ```
 
-### 2.2 IAR 工具路径 / IAR Tool Paths
+### 2.2 IAR 工具路径
 
 ```
 D:\iar\ewarm-9.70.1\
@@ -117,20 +117,20 @@ D:\iar\ewarm-9.70.1\
 
 ---
 
-## 3. 本地开发流程 / Local Development
+## 3. 本地开发流程
 
-### 3.1 环境准备 / Environment Setup
+### 3.1 环境准备
 
 ```powershell
-# 1. 安装 pre-commit hook / Install pre-commit hook
+# 1. 安装 pre-commit hook
 cp ci/hooks/pre-commit .git/hooks/
 # Windows 下可能需要使用 Git Bash 执行
 
-# 2. 验证 IAR 路径 / Verify IAR path
+# 2. 验证 IAR 路径
 D:\iar\ewarm-9.70.1\common\bin\iarbuild.exe
 ```
 
-### 3.2 开发流程图 / Development Flow
+### 3.2 开发流程图
 
 ```mermaid
 sequenceDiagram
@@ -160,30 +160,30 @@ sequenceDiagram
     end
 ```
 
-### 3.3 日常开发命令 / Daily Commands
+### 3.3 日常开发命令
 
 ```powershell
-# 本地构建 / Local build
+# 本地构建
 .\ci\scripts\build.ps1 -Rebuild -GenerateHex -GenerateBin
 
-# 仅编译检查 / Compile check only
+# 仅编译检查
 .\ci\scripts\build.ps1
 
 # 构建 Bootloader
 .\ci\scripts\build_bootloader.ps1 -Rebuild
 
-# 本地运行 C-STAT / Local C-STAT
+# 本地运行 C-STAT
 .\ci\scripts\cstat_analyze.ps1
 
-# 生成版本信息 / Generate version
+# 生成版本信息
 .\ci\scripts\generate_version.ps1
 ```
 
 ---
 
-## 4. CI/CD 流水线 / CI/CD Pipeline
+## 4. CI/CD 流水线
 
-### 4.1 流水线架构 / Pipeline Architecture
+### 4.1 流水线架构
 
 ```mermaid
 flowchart LR
@@ -218,12 +218,12 @@ flowchart LR
     Jobs --> Artifacts
 ```
 
-### 4.2 GitHub Actions 配置 / GitHub Actions Config
+### 4.2 GitHub Actions 配置
 
-**文件位置 / Location**: `.github/workflows/ci-build.yml`
+**文件位置**: `.github/workflows/ci-build.yml`
 
 ```yaml
-# 触发条件 / Triggers
+# 触发条件
 on:
   push:
     branches: [main, develop, 'feature/**']
@@ -231,7 +231,7 @@ on:
     branches: [main, develop]
   workflow_dispatch:  # 手动触发
 
-# 运行环境 / Runner
+# 运行环境
 runs-on: [self-hosted, Windows, IAR]
 
 # 主要 Jobs
@@ -243,15 +243,15 @@ jobs:
   summary:        # 构建摘要
 ```
 
-### 4.3 Self-hosted Runner 配置 / Runner Setup
+### 4.3 Self-hosted Runner 配置
 
-**要求 / Requirements**:
+**要求**:
 - Windows 10/11 或 Windows Server
 - IAR EWARM 9.70.1 (D:\iar\ewarm-9.70.1)
 - IAR 许可证 (PC-locked)
 - Git for Windows
 
-**安装步骤 / Installation**:
+**安装步骤**:
 ```powershell
 # 1. 从 GitHub 仓库设置页面获取 Runner 安装包
 # Settings → Actions → Runners → New self-hosted runner
@@ -270,15 +270,15 @@ jobs:
 
 ---
 
-## 5. 构建脚本使用 / Build Scripts Usage
+## 5. 构建脚本使用
 
 ### 5.1 build.ps1 - 主构建脚本
 
 ```powershell
-# 语法 / Syntax
+# 语法
 .\ci\scripts\build.ps1 [参数]
 
-# 参数 / Parameters
+# 参数
 -Configuration    # 构建配置名 (默认: TKX_ThreadX)
 -IARPath          # IAR 安装路径 (默认: D:\iar\ewarm-9.70.1)
 -ProjectPath      # 项目文件路径
@@ -289,7 +289,7 @@ jobs:
 -Verbose          # 详细输出
 ```
 
-**示例 / Examples**:
+**示例**:
 ```powershell
 # 完整重建并生成输出文件
 .\ci\scripts\build.ps1 -Rebuild -GenerateHex -GenerateBin
@@ -327,14 +327,14 @@ jobs:
 
 ---
 
-## 6. 静态分析 / Static Analysis
+## 6. 静态分析
 
-### 6.1 C-STAT 概述 / C-STAT Overview
+### 6.1 C-STAT 概述
 
 ```mermaid
 flowchart LR
     subgraph Input
-        SRC[源代码<br/>Source Code]
+        SRC[源代码]
         RULES[MISRA-C:2012<br/>规则集]
     end
 
@@ -371,7 +371,7 @@ flowchart LR
 .\ci\scripts\cstat_analyze.ps1 -FailOnHigh
 ```
 
-### 6.3 排除路径 / Excluded Paths
+### 6.3 排除路径
 
 以下第三方代码不进行 MISRA 检查：
 ```
@@ -381,23 +381,23 @@ Drivers/CMSIS/*
 ThirdParty/SEGGER/*
 ```
 
-### 6.4 C-STAT 报告解读 / Report Interpretation
+### 6.4 C-STAT 报告解读
 
-| 严重度 / Severity | 处理 / Action |
-|-------------------|---------------|
-| **High** | 必须修复 / Must fix |
-| **Medium** | 应该修复 / Should fix |
-| **Low** | 建议修复 / Consider fixing |
+| 严重度 | 处理 |
+|--------|------|
+| **High** | 必须修复 |
+| **Medium** | 应该修复 |
+| **Low** | 建议修复 |
 
-**输出文件 / Output Files**:
+**输出文件**:
 - `artifacts/cstat/C-STAT_Messages_Filtered.txt` - 过滤后的报告
 - `artifacts/cstat/cstat_summary.json` - JSON 摘要
 
 ---
 
-## 7. 运行时分析 / Runtime Analysis
+## 7. 运行时分析
 
-### 7.1 C-RUN 概述 / C-RUN Overview
+### 7.1 C-RUN 概述
 
 C-RUN 在**目标硬件调试时**检测运行时错误：
 
@@ -416,12 +416,12 @@ flowchart LR
     end
 ```
 
-### 7.2 C-RUN 配置 / C-RUN Configuration
+### 7.2 C-RUN 配置
 
-**位置 / Location**: Project → Options → C/C++ Compiler → Runtime Checking
+**位置**: Project → Options → C/C++ Compiler → Runtime Checking
 
-| 检查项 / Check | 说明 / Description |
-|----------------|---------------------|
+| 检查项 | 说明 |
+|--------|------|
 | ☑ Bounds checking | 数组越界检测 |
 | ☑ Integer overflow | 有符号整数溢出 |
 | ☑ Unsigned overflow | 无符号整数溢出 |
@@ -429,7 +429,7 @@ flowchart LR
 | ☑ Division by zero | 除零检测 |
 | ☑ Unhandled case | switch 未处理 case |
 
-### 7.3 C-RUN 使用流程 / Usage Flow
+### 7.3 C-RUN 使用流程
 
 ```mermaid
 sequenceDiagram
@@ -456,9 +456,9 @@ sequenceDiagram
 
 ---
 
-## 8. 版本管理 / Version Management
+## 8. 版本管理
 
-### 8.1 版本信息生成 / Version Generation
+### 8.1 版本信息生成
 
 ```powershell
 # 生成版本头文件
@@ -468,9 +468,9 @@ sequenceDiagram
 .\ci\scripts\generate_version.ps1 -MajorVersion 1 -MinorVersion 2 -PatchVersion 0
 ```
 
-### 8.2 生成的版本信息 / Generated Version Info
+### 8.2 生成的版本信息
 
-**文件 / File**: `Core/Inc/version_info.h`
+**文件**: `Core/Inc/version_info.h`
 
 ```c
 #define VERSION_MAJOR           1
@@ -483,23 +483,23 @@ sequenceDiagram
 #define GIT_TAG                 "v1.0.0"
 #define GIT_DIRTY               0
 
-#define BUILD_DATE              "2024-12-10"
-#define BUILD_TIMESTAMP         "2024-12-10T15:30:00Z"
+#define BUILD_DATE              "2025-12-10"
+#define BUILD_TIMESTAMP         "2025-12-10T15:30:00Z"
 
 #define VERSION_STRING          "1.0.0"
-#define VERSION_FULL            "1.0.0+2412101530"
+#define VERSION_FULL            "1.0.0+2512101530"
 ```
 
-### 8.3 构建信息 JSON / Build Info JSON
+### 8.3 构建信息 JSON
 
-**文件 / File**: `artifacts/build_info.json`
+**文件**: `artifacts/build_info.json`
 
 ```json
 {
   "project": "TKX_ThreadX",
   "version": "1.0.0",
-  "build_number": "2412101530",
-  "timestamp": "2024-12-10T15:30:00Z",
+  "build_number": "2512101530",
+  "timestamp": "2025-12-10T15:30:00Z",
   "git": {
     "commit": "abc1234",
     "branch": "main",
@@ -514,9 +514,9 @@ sequenceDiagram
 
 ---
 
-## 9. 发布流程 / Release Process
+## 9. 发布流程
 
-### 9.1 发布流程图 / Release Flow
+### 9.1 发布流程图
 
 ```mermaid
 flowchart TB
@@ -539,34 +539,34 @@ flowchart TB
     end
 ```
 
-### 9.2 发布检查清单 / Release Checklist
+### 9.2 发布检查清单
 
 ```markdown
-## 发布前检查 / Pre-Release Checklist
+## 发布前检查
 
-### 代码质量 / Code Quality
-- [ ] 所有 CI 检查通过 / All CI checks passed
-- [ ] C-STAT 无高严重度问题 / No high severity C-STAT issues
-- [ ] 代码审查已完成 / Code review completed
+### 代码质量
+- [ ] 所有 CI 检查通过
+- [ ] C-STAT 无高严重度问题
+- [ ] 代码审查已完成
 
-### 测试 / Testing
-- [ ] C-RUN 运行时测试通过 / C-RUN tests passed
-- [ ] 功能测试通过 / Functional tests passed
-- [ ] 安全自检通过 / Safety self-tests passed
+### 测试
+- [ ] C-RUN 运行时测试通过
+- [ ] 功能测试通过
+- [ ] 安全自检通过
 
-### 文档 / Documentation
-- [ ] CHANGELOG 已更新 / CHANGELOG updated
-- [ ] 版本号已更新 / Version number updated
-- [ ] 发布说明已准备 / Release notes prepared
+### 文档
+- [ ] CHANGELOG 已更新
+- [ ] 版本号已更新
+- [ ] 发布说明已准备
 
-### 产物 / Artifacts
-- [ ] TKX_ThreadX.hex 已生成 / Generated
-- [ ] TKX_ThreadX.bin 已生成 / Generated
-- [ ] Bootloader.hex 已生成 / Generated
-- [ ] build_info.json 已生成 / Generated
+### 产物
+- [ ] TKX_ThreadX.hex 已生成
+- [ ] TKX_ThreadX.bin 已生成
+- [ ] Bootloader.hex 已生成
+- [ ] build_info.json 已生成
 ```
 
-### 9.3 创建发布 / Create Release
+### 9.3 创建发布
 
 ```bash
 # 1. 确保在 main 分支
@@ -581,7 +581,7 @@ git push origin v1.0.0
 # 或手动触发 release workflow
 ```
 
-### 9.4 发布产物结构 / Release Artifacts
+### 9.4 发布产物结构
 
 ```
 TKX_ThreadX-v1.0.0/
@@ -596,18 +596,18 @@ TKX_ThreadX-v1.0.0/
 
 ---
 
-## 附录 A: 故障排除 / Troubleshooting
+## 附录 A: 故障排除
 
-### A.1 常见问题 / Common Issues
+### A.1 常见问题
 
-| 问题 / Issue | 解决方案 / Solution |
-|--------------|---------------------|
+| 问题 | 解决方案 |
+|------|----------|
 | iarbuild.exe 未找到 | 检查 IAR_PATH 环境变量 |
 | 许可证错误 | 确认在有许可证的机器上运行 |
 | CI 构建失败 | 检查 Self-hosted Runner 状态 |
 | C-STAT 报告为空 | 确认项目已编译成功 |
 
-### A.2 日志位置 / Log Locations
+### A.2 日志位置
 
 ```
 artifacts/
@@ -620,13 +620,8 @@ artifacts/
 
 ---
 
-## 版本历史 / Version History
+## 版本历史
 
-| 版本 / Version | 日期 / Date | 描述 / Description |
-|----------------|-------------|---------------------|
-| 1.0.0 | 2024-12-10 | 初始版本 / Initial version |
-
----
-
-*本文档符合 IEC 61508 SIL 2 功能安全开发流程要求*
-*This document complies with IEC 61508 SIL 2 functional safety development requirements*
+| 版本 | 日期 | 描述 |
+|------|------|------|
+| 1.0.0 | 2025-12-10 | 初始版本 |
