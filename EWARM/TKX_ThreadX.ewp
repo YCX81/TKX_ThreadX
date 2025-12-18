@@ -1146,6 +1146,9 @@
             <data />
         </settings>
     </configuration>
+    <mfc>
+        <configuration>TKX_ThreadX</configuration>
+    </mfc>
     <group>
         <name>Application</name>
         <group>
@@ -1463,6 +1466,9 @@
                     <file>
                         <name>$PROJ_DIR$\..\AZURE_RTOS\App\app_azure_rtos.c</name>
                     </file>
+                    <configuration>
+                        <name>TKX_ThreadX</name>
+                    </configuration>
                 </group>
             </group>
             <group>
@@ -1564,6 +1570,9 @@
         <name>BSP</name>
         <file>
             <name>$PROJ_DIR$\..\BSP\Src\bsp_sysview.c</name>
+            <configuration>
+                <name>TKX_ThreadX</name>
+            </configuration>
         </file>
         <file>
             <name>$PROJ_DIR$\..\BSP\Src\bsp_w25qxx.c</name>

@@ -21,7 +21,24 @@
 #include "sdio.h"
 
 /* USER CODE BEGIN 0 */
+#include <stdbool.h>
+#include "SEGGER_RTT.h"
 
+/* Private variables ---------------------------------------------------------*/
+static bool s_sd_card_present = false;
+
+/* Private defines -----------------------------------------------------------*/
+#define SD_INIT_RETRY_COUNT     3U
+#define SD_INIT_RETRY_DELAY_MS  100U
+
+/**
+ * @brief  Check if SD card is initialized and present
+ * @retval true if SD card is ready, false otherwise
+ */
+bool SDIO_IsCardPresent(void)
+{
+    return s_sd_card_present;
+}
 /* USER CODE END 0 */
 
 SD_HandleTypeDef hsd;
@@ -33,27 +50,53 @@ void MX_SDIO_SD_Init(void)
 {
 
   /* USER CODE BEGIN SDIO_Init 0 */
+  HAL_StatusTypeDef hal_status = HAL_OK;
+  uint32_t retry_count = 0U;
 
+  s_sd_card_present = false;
   /* USER CODE END SDIO_Init 0 */
 
   /* USER CODE BEGIN SDIO_Init 1 */
-
+  /* Note: No manual SDIO reset needed - HAL_SD_Init() handles full initialization.
+   * MX_SDIO_SD_Init() is called after HAL_Init(), so HAL_Delay() is available. */
   /* USER CODE END SDIO_Init 1 */
+
   hsd.Instance = SDIO;
   hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
   hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
   hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
-  hsd.Init.BusWide = SDIO_BUS_WIDE_4B;
+  hsd.Init.BusWide = SDIO_BUS_WIDE_1B;  /* Start with 1-bit mode */
   hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
   hsd.Init.ClockDiv = 2;
-  if (HAL_SD_Init(&hsd) != HAL_OK)
+
+  /* Retry SD card initialization */
+  for (retry_count = 0U; retry_count < SD_INIT_RETRY_COUNT; retry_count++)
   {
-    Error_Handler();
+      hal_status = HAL_SD_Init(&hsd);
+      if (hal_status == HAL_OK)
+      {
+          break;
+      }
+      HAL_Delay(SD_INIT_RETRY_DELAY_MS);
   }
-  if (HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B) != HAL_OK)
+
+  if (hal_status != HAL_OK)
   {
-    Error_Handler();
+      SEGGER_RTT_printf(0, "[WARN] SD card init failed (no card?)\r\n");
+      return;  /* Continue without SD card */
   }
+
+  /* Switch to 4-bit wide bus mode */
+  hal_status = HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B);
+  if (hal_status != HAL_OK)
+  {
+      SEGGER_RTT_printf(0, "[WARN] SD 4-bit mode failed, using 1-bit\r\n");
+      /* Continue with 1-bit mode */
+  }
+
+  s_sd_card_present = true;
+  SEGGER_RTT_printf(0, "[INFO] SD card initialized\r\n");
+
   /* USER CODE BEGIN SDIO_Init 2 */
 
   /* USER CODE END SDIO_Init 2 */

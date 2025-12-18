@@ -29,7 +29,7 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 extern SD_HandleTypeDef hsd;
@@ -41,7 +41,11 @@ extern SD_HandleTypeDef hsd;
 void MX_SDIO_SD_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+/**
+ * @brief  Check if SD card is initialized and present
+ * @retval true if SD card is ready, false otherwise
+ */
+bool SDIO_IsCardPresent(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

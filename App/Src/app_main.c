@@ -15,6 +15,7 @@
 #include "safety_stack.h"
 #include "safety_flow.h"
 #include "svc_params.h"
+#include "SEGGER_RTT.h"
 
 /* Private defines -----------------------------------------------------------*/
 #define MAIN_THREAD_NAME    "App Main"
@@ -125,7 +126,12 @@ UINT App_CreateThreads(TX_BYTE_POOL *byte_pool)
 
 void App_MainThreadEntry(ULONG thread_input)
 {
+    static uint32_t loop_count = 0;
     (void)thread_input;
+
+    /* RTT Test - Initial message */
+    SEGGER_RTT_printf(0, "\r\n=== TKX_ThreadX App Started ===\r\n");
+    SEGGER_RTT_printf(0, "SystemView Channel 1 active\r\n");
 
     /* Wait for safety system to be ready */
     while (!Safety_IsOperational())
@@ -133,9 +139,17 @@ void App_MainThreadEntry(ULONG thread_input)
         tx_thread_sleep(10);
     }
 
+    SEGGER_RTT_printf(0, "Safety system operational\r\n");
+
     /* Main application loop */
     while (1)
     {
+        /* Periodic RTT output for testing */
+        if ((loop_count % 100) == 0)
+        {
+            SEGGER_RTT_printf(0, "Loop: %u\r\n", loop_count);
+        }
+        loop_count++;
         /* Check safety state */
         safety_state_t state = Safety_GetState();
 

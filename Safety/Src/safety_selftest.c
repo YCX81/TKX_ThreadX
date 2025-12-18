@@ -189,11 +189,12 @@ selftest_result_t Safety_SelfTest_FlashCRC_Continue(void)
 
 selftest_result_t Safety_SelfTest_Clock(void)
 {
+    /* Note: Divide first to avoid uint32_t overflow (168MHz * 105 > UINT32_MAX) */
     uint32_t sysclk = HAL_RCC_GetSysClockFreq();
-    uint32_t min_freq = EXPECTED_SYSCLK_HZ * (100 - CLOCK_TOLERANCE_PERCENT) / 100;
-    uint32_t max_freq = EXPECTED_SYSCLK_HZ * (100 + CLOCK_TOLERANCE_PERCENT) / 100;
+    uint32_t min_freq = (EXPECTED_SYSCLK_HZ / 100U) * (100U - CLOCK_TOLERANCE_PERCENT);
+    uint32_t max_freq = (EXPECTED_SYSCLK_HZ / 100U) * (100U + CLOCK_TOLERANCE_PERCENT);
 
-    if (sysclk < min_freq || sysclk > max_freq)
+    if ((sysclk < min_freq) || (sysclk > max_freq))
     {
         Safety_ReportError(SAFETY_ERR_CLOCK, sysclk, EXPECTED_SYSCLK_HZ);
         return SELFTEST_FAIL_CLOCK;

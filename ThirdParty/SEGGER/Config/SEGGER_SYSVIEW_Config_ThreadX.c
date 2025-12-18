@@ -53,9 +53,9 @@ Revision: $Rev: 7745 $
 */
 #include "tx_api.h"
 #include "SEGGER_SYSVIEW.h"
+#include "stm32f4xx.h"  /* Use STM32 definitions for SystemCoreClock */
 
 extern const SEGGER_SYSVIEW_OS_API SYSVIEW_X_OS_TraceAPI;
-extern U32 SystemCoreClock;
 
 /*********************************************************************
 *

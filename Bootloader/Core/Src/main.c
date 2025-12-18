@@ -35,7 +35,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define APP_ADDRESS             0x08010000U  /* Application start address */
+#define RAM_START_ADDRESS       0x20000000U  /* STM32F407 RAM start */
+#define RAM_ADDRESS_MASK        0x2FFE0000U  /* Mask for RAM validation */
+#define NVIC_ICER_COUNT         8U           /* Number of NVIC ICER registers */
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -52,7 +55,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+static void JumpToApplication(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -90,9 +93,14 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_CRC_Init();
-  MX_IWDG_Init();
+
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+
+  /* Jump to application - does not return if app is valid */
+  JumpToApplication();
+
+  /* If we reach here, application is invalid - stay in bootloader */
 
   /* USER CODE END 2 */
 
@@ -103,6 +111,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    /* Bootloader main loop - could add firmware update logic here */
   }
   /* USER CODE END 3 */
 }
@@ -154,6 +163,64 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+/**
+ * @brief  Jump to application at APP_ADDRESS
+ * @note   This function does not return if application is valid
+ * @retval None
+ */
+static void JumpToApplication(void)
+{
+    typedef void (*pFunction)(void);
+    pFunction jump_to_app;
+    uint32_t jump_address = 0U;
+    uint32_t app_stack_pointer = 0U;
+    uint32_t i = 0U;
+
+    /* Get the application stack pointer (first entry in vector table) */
+    app_stack_pointer = *(__IO uint32_t *)APP_ADDRESS;
+
+    /* Check if valid stack pointer (must be in RAM: 0x20000000-0x2001FFFF for STM32F407) */
+    if ((app_stack_pointer & RAM_ADDRESS_MASK) != RAM_START_ADDRESS)
+    {
+        /* Invalid application - stay in bootloader */
+        return;
+    }
+
+    /* Get the application reset handler address (second entry in vector table) */
+    jump_address = *(__IO uint32_t *)(APP_ADDRESS + 4U);
+    jump_to_app = (pFunction)jump_address;
+
+    /* Disable all interrupts */
+    __disable_irq();
+
+    /* Disable SysTick and clear pending interrupt */
+    SysTick->CTRL = 0U;
+    SysTick->LOAD = 0U;
+    SysTick->VAL = 0U;
+
+    /* Clear all pending interrupts */
+    for (i = 0U; i < NVIC_ICER_COUNT; i++)
+    {
+        NVIC->ICER[i] = 0xFFFFFFFFU;
+        NVIC->ICPR[i] = 0xFFFFFFFFU;
+    }
+
+    /* Set the vector table offset to application */
+    SCB->VTOR = APP_ADDRESS;
+
+    /* Set the main stack pointer to the application stack pointer */
+    __set_MSP(app_stack_pointer);
+
+    /* Jump to application reset handler */
+    jump_to_app();
+
+    /* Should never reach here - infinite loop as safety measure */
+    for (;;)
+    {
+        /* Safety: halt if jump fails */
+    }
+}
 
 /* USER CODE END 4 */
 

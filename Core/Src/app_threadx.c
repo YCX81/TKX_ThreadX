@@ -76,8 +76,9 @@ UINT App_ThreadX_Init(VOID *memory_ptr)
 void MX_ThreadX_Init(void)
 {
   /* USER CODE BEGIN  Before_Kernel_Start */
-  /* Initialize SystemView for ThreadX tracing */
+  /* Initialize and start SystemView for ThreadX tracing */
   BSP_SysView_Init();
+  BSP_SysView_Start();
   /* USER CODE END  Before_Kernel_Start */
 
   tx_kernel_enter();

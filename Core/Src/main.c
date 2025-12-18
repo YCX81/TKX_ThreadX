@@ -33,6 +33,7 @@
 #include "app_main.h"
 #include "safety_core.h"
 #include "safety_mpu.h"
+#include "SEGGER_RTT.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -75,6 +76,18 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+  /* Re-enable interrupts (disabled by bootloader jump) */
+  __enable_irq();
+
+  /* Enable DWT cycle counter for RTT timestamps (after bootloader jump) */
+  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  DWT->CYCCNT = 0U;
+  DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+
+  /* Initialize RTT early for debug output */
+  SEGGER_RTT_Init();
+  SEGGER_RTT_printf(0, "\r\n=== App Starting ===\r\n");
+
   /* Early safety initialization before HAL */
   Safety_EarlyInit();
   /* USER CODE END 1 */
@@ -109,10 +122,15 @@ int main(void)
   MX_USART1_UART_Init();
   MX_WWDG_Init();
   /* USER CODE BEGIN 2 */
+  SEGGER_RTT_printf(0, "Peripherals initialized\r\n");
+
   /* Peripheral initialization for safety */
   Safety_PeripheralInit();
+  SEGGER_RTT_printf(0, "Safety peripheral init done\r\n");
+
   /* Pre-initialization before ThreadX */
   App_PreInit();
+  SEGGER_RTT_printf(0, "App pre-init done, starting ThreadX...\r\n");
   /* USER CODE END 2 */
 
   MX_ThreadX_Init();
